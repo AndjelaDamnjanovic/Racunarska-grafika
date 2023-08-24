@@ -472,6 +472,24 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
             glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         }
     }
+
+    if (key == GLFW_KEY_R && action == GLFW_PRESS) {
+        programState->pointLight.constant = 1.0f;
+        programState->pointLight.linear = 0.02f;
+        programState->pointLight.quadratic = 0.1f;
+    }
+
+    if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+        programState->pointLight.constant = 1.0f;
+        programState->pointLight.linear = 0.99f;
+        programState->pointLight.quadratic = 0.5f;
+    }
+
+    if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+        programState->pointLight.constant = 1.0f;
+        programState->pointLight.linear = 0.03f;
+        programState->pointLight.quadratic = 0.03f;
+    }
 }
 
 // fja za ucitavanje tekstura iz skyboxa
