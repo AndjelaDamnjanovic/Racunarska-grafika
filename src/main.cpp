@@ -166,6 +166,8 @@ int main() {
     // build and compile shaders
     // -------------------------
     Shader ourShader("resources/shaders/2.model_lighting.vs", "resources/shaders/2.model_lighting.fs");
+    // shader za kocku
+    Shader yellowShader("resources/shaders/yellow_light.vs", "resources/shaders/yellow_light.fs");
     // dodajemo skybox shader
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
     // load models
@@ -242,6 +244,70 @@ int main() {
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    //kocka na sceni
+    float vertices[] = {
+            // pozicije                         // koordinate tekstura          // normale
+            -0.5f, -0.5f, -0.5f,      0.0f, 0.0f,          0.0f, 0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f,     1.0f, 1.0f,         0.0f, 0.0f, -1.0f,
+            0.5f, -0.5f, -0.5f,   1.0f, 0.0f,         0.0f, 0.0f, -1.0f,
+            0.5f,  0.5f, -0.5f,   1.0f, 1.0f,         0.0f, 0.0f, -1.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,         0.0f, 0.0f, -1.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,         0.0f, 0.0f, -1.0f,
+
+
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,     0.0f, 0.0f, 1.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,      0.0f, 0.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,      0.0f, 0.0f, 1.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 1.0f,      0.0f, 0.0f, 1.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,     0.0f, 0.0f, 1.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,     0.0f, 0.0f, 1.0f,
+
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,    -1.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  1.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f, -1.0f, 0.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  1.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  0.0f, 1.0f,   1.0f, 0.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  0.0f, 0.0f,   1.0f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f, -0.5f,  1.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+            0.5f, -0.5f,  0.5f,  1.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,  0.0f, -1.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,  0.0f, -1.0f, 0.0f,
+
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,    0.0f, 1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,    0.0f, 1.0f, 0.0f,
+            0.5f,  0.5f, -0.5f,  1.0f, 1.0f,    0.0f, 1.0f, 0.0f,
+            0.5f,  0.5f,  0.5f,  1.0f, 0.0f,    0.0f, 1.0f, 0.0f,
+            -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,    0.0f, 1.0f, 0.0f,
+            -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,    0.0f, 1.0f, 0.0f
+
+    };
+
+    // pravimo VBO i VAO bafere za kocku
+    unsigned int VBO_cube, VAO_cube;
+    glGenVertexArrays(1, &VAO_cube);
+    glGenBuffers(1, &VBO_cube);
+
+    glBindVertexArray(VAO_cube);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_cube);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(5*sizeof(float)));
+    glEnableVertexAttribArray(2);
 
     //ucitavanje skybox modela
     stbi_set_flip_vertically_on_load(false);
@@ -337,6 +403,165 @@ int main() {
         model4=glm::scale(model4, glm::vec3(0.1f));
         ourShader.setMat4("model", model4);
         myModel3.Draw(ourShader);
+
+        yellowShader.use();
+
+        // matrice transformacija: view, projection
+        yellowShader.setMat4("projection", projection);
+        yellowShader.setMat4("view", view);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model = glm::mat4(1.0f);
+        yellow_model = glm::translate(yellow_model, glm::vec3(-17.3f, 2.2f+sin(glfwGetTime())*1/3, -4.0f));
+        yellow_model = glm::scale(yellow_model, glm::vec3(0.5, 0.5, 0.5));
+        yellowShader.setMat4("model", yellow_model);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model1 = glm::mat4(1.0f);
+        yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f+sin(glfwGetTime())*1/3, -3.2f));
+        // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f, -3.5f));
+        yellow_model1 = glm::scale(yellow_model1, glm::vec3(0.4, 0.4, 0.4));
+        yellowShader.setMat4("model", yellow_model1);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model2 = glm::mat4(1.0f);
+        yellow_model2 = glm::translate(yellow_model2, glm::vec3(-17.3f, 3.0f+sin(glfwGetTime())*1/3, -4.0f));
+        // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f, -3.5f));
+        yellow_model2 = glm::scale(yellow_model2, glm::vec3(0.4, 0.4, 0.4));
+        yellowShader.setMat4("model", yellow_model2);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model3 = glm::mat4(1.0f);
+        yellow_model3 = glm::translate(yellow_model3, glm::vec3(-17.8f, 2.5f+sin(glfwGetTime())*1/3, -5.8f));
+        yellow_model3 = glm::scale(yellow_model3, glm::vec3(0.4, 0.4, 0.4));
+        yellowShader.setMat4("model", yellow_model3);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model4 = glm::mat4(1.0f);
+        yellow_model4 = glm::translate(yellow_model4, glm::vec3(-17.8f, 2.2f+sin(glfwGetTime())*1/3, -2.2f));
+        // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f, -3.5f));
+        yellow_model4 = glm::scale(yellow_model4, glm::vec3(0.3, 0.3, 0.3));
+        yellowShader.setMat4("model", yellow_model4);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model5 = glm::mat4(1.0f);
+        yellow_model5 = glm::translate(yellow_model5, glm::vec3(-17.3f, 3.8f+sin(glfwGetTime())*1/3, -4.0f));
+        // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f, -3.5f));
+        yellow_model5 = glm::scale(yellow_model5, glm::vec3(0.3, 0.3, 0.3));
+        yellowShader.setMat4("model", yellow_model5);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model6 = glm::mat4(1.0f);
+        yellow_model6 = glm::translate(yellow_model6, glm::vec3(-17.8f, 2.5f+sin(glfwGetTime())*1/3, -6.8f));
+        yellow_model6 = glm::scale(yellow_model6, glm::vec3(0.3, 0.3, 0.3));
+        yellowShader.setMat4("model", yellow_model6);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model8 = glm::mat4(1.0f);
+        yellow_model8 = glm::translate(yellow_model8, glm::vec3(-17.3f, 4.6f+sin(glfwGetTime())*1/3, -4.0f));
+        // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f, -3.5f));
+        yellow_model8 = glm::scale(yellow_model8, glm::vec3(0.2, 0.2, 0.2));
+        yellowShader.setMat4("model", yellow_model8);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model9 = glm::mat4(1.0f);
+        yellow_model9 = glm::translate(yellow_model9, glm::vec3(-17.8f, 2.5f+sin(glfwGetTime())*1/3, -7.6f));
+        yellow_model9 = glm::scale(yellow_model9, glm::vec3(0.2, 0.2, 0.2));
+        yellowShader.setMat4("model", yellow_model9);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model10 = glm::mat4(1.0f);
+        yellow_model10 = glm::translate(yellow_model10, glm::vec3(-17.8f, 2.2f+sin(glfwGetTime())*1/3, -1.4f));
+        yellow_model10 = glm::scale(yellow_model10, glm::vec3(0.2, 0.2, 0.2));
+        yellowShader.setMat4("model", yellow_model10);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model11 = glm::mat4(1.0f);
+        yellow_model11 = glm::translate(yellow_model11, glm::vec3(-18.0f, 2.9f+sin(glfwGetTime())*1/3, -3.7f));
+        yellow_model11 = glm::scale(yellow_model11, glm::vec3(0.4, 0.4, 0.4));
+        yellowShader.setMat4("model", yellow_model11);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model12 = glm::mat4(1.0f);
+        yellow_model12 = glm::translate(yellow_model12, glm::vec3(-18.5f, 3.5f+sin(glfwGetTime())*1/3, -3.2f));
+        yellow_model12 = glm::scale(yellow_model12, glm::vec3(0.3, 0.3, 0.3));
+        yellowShader.setMat4("model", yellow_model12);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model13 = glm::mat4(1.0f);
+        yellow_model13 = glm::translate(yellow_model13, glm::vec3(-18.9f, 3.9f+sin(glfwGetTime())*1/3, -2.8f));
+        yellow_model13 = glm::scale(yellow_model13, glm::vec3(0.2, 0.2, 0.2));
+        yellowShader.setMat4("model", yellow_model13);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model14 = glm::mat4(1.0f);
+        yellow_model14 = glm::translate(yellow_model14, glm::vec3(-16.6f, 2.9f+sin(glfwGetTime())*1/3, -4.3f));
+        yellow_model14 = glm::scale(yellow_model14, glm::vec3(0.4, 0.4, 0.4));
+        yellowShader.setMat4("model", yellow_model14);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model15 = glm::mat4(1.0f);
+        yellow_model15 = glm::translate(yellow_model15, glm::vec3(-16.1f, 3.5f+sin(glfwGetTime())*1/3, -4.7f));
+        yellow_model15 = glm::scale(yellow_model15, glm::vec3(0.3, 0.3, 0.3));
+        yellowShader.setMat4("model", yellow_model15);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        // model matrica i render kocke
+        glm::mat4 yellow_model16 = glm::mat4(1.0f);
+        yellow_model16 = glm::translate(yellow_model16, glm::vec3(-15.9f, 3.9f+sin(glfwGetTime())*1/3, -5.1f));
+        yellow_model16 = glm::scale(yellow_model16, glm::vec3(0.2, 0.2, 0.2));
+        yellowShader.setMat4("model", yellow_model16);
+
+        glBindVertexArray(VAO_cube);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
 
         //skybox sa matricama transformacije
