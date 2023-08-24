@@ -172,9 +172,11 @@ int main() {
     // -----------
     Model myModel("resources/objects/skull/12140_Skull_v3_L2.obj");
     Model myModel2("resources/objects/daisy/10441_Daisy_v1_max2010_iteration-2.obj");
+    Model myModel3("resources/objects/book/ScrollBookCandle.obj");
 
     myModel.SetShaderTextureNamePrefix("material.");
     myModel2.SetShaderTextureNamePrefix("material.");
+    myModel3.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -312,7 +314,7 @@ int main() {
         myModel.Draw(ourShader);
         // renderuj prvu belu radu
         glm::mat4 model2=glm::mat4(1.0f);
-        model2=glm::translate(model2, glm::vec3(-13.0, 0.0f,-1.0f));
+        model2=glm::translate(model2, glm::vec3(-13.0, 0.27f,-1.0f));
         model2=glm::rotate(model2, glm::radians(0.0f), glm::vec3(1,0,1));
         model2=glm::scale(model2, glm::vec3(0.20f));
         ourShader.setMat4("model", model2);
@@ -321,11 +323,20 @@ int main() {
 
         //renderuj drugu belu radu
         glm::mat4 model3=glm::mat4(1.0f);
-        model3=glm::translate(model3, glm::vec3(-13.2, 0.0f,-1.0f));
+        model3=glm::translate(model3, glm::vec3(-13.2, 0.27f,-1.0f));
         model3=glm::rotate(model3, glm::radians(0.0f), glm::vec3(1,0,1));
         model3=glm::scale(model3, glm::vec3(0.20f));
         ourShader.setMat4("model", model3);
         myModel2.Draw(ourShader);
+
+
+        // renderujemo i poslednji model-book, candle, scroll
+        glm::mat4 model4=glm::mat4(1.0f);
+        model4=glm::translate(model4, glm::vec3(-15.0, -0.35f,-1.0f));
+        model4=glm::rotate(model4, glm::radians(0.0f), glm::vec3(1,0,1));
+        model4=glm::scale(model4, glm::vec3(0.1f));
+        ourShader.setMat4("model", model4);
+        myModel3.Draw(ourShader);
 
 
         //skybox sa matricama transformacije
