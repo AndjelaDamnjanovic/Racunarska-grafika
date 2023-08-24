@@ -171,7 +171,10 @@ int main() {
     // load models
     // -----------
     Model myModel("resources/objects/skull/12140_Skull_v3_L2.obj");
+    Model myModel2("resources/objects/daisy/10441_Daisy_v1_max2010_iteration-2.obj");
+
     myModel.SetShaderTextureNamePrefix("material.");
+    myModel2.SetShaderTextureNamePrefix("material.");
 
     PointLight& pointLight = programState->pointLight;
     pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
@@ -307,6 +310,22 @@ int main() {
         model = glm::scale(model, glm::vec3(programState->skullScale));    // it's a bit too big for our scene, so scale it down
         ourShader.setMat4("model", model);
         myModel.Draw(ourShader);
+        // renderuj prvu belu radu
+        glm::mat4 model2=glm::mat4(1.0f);
+        model2=glm::translate(model2, glm::vec3(-13.0, 0.0f,-1.0f));
+        model2=glm::rotate(model2, glm::radians(0.0f), glm::vec3(1,0,1));
+        model2=glm::scale(model2, glm::vec3(0.20f));
+        ourShader.setMat4("model", model2);
+        myModel2.Draw(ourShader);
+
+
+        //renderuj drugu belu radu
+        glm::mat4 model3=glm::mat4(1.0f);
+        model3=glm::translate(model3, glm::vec3(-13.2, 0.0f,-1.0f));
+        model3=glm::rotate(model3, glm::radians(0.0f), glm::vec3(1,0,1));
+        model3=glm::scale(model3, glm::vec3(0.20f));
+        ourShader.setMat4("model", model3);
+        myModel2.Draw(ourShader);
 
 
         //skybox sa matricama transformacije
