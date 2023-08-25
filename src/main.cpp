@@ -667,7 +667,11 @@ int main() {
     // ------------------------------------------------------------------
     glDeleteVertexArrays(1, &skyboxVAO);
     glDeleteVertexArrays(1, &VAO_texture);
+    // valgrind je javio da imamo curenje memorije, pa oslobadjamo bafere koje smo zaboravili
+    glDeleteVertexArrays(1, &VAO_cube);
 
+    glDeleteBuffers(1, &VBO_cube);
+    // zavrsavamo sa oslobadjanjem bafera
     glDeleteBuffers(1, &VBO_texture);
     glDeleteBuffers(1, &skyboxVBO);
     glfwTerminate();
