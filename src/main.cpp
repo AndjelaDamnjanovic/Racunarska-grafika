@@ -26,6 +26,8 @@ void processInput(GLFWwindow *window);
 
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
+unsigned int loadTexture(char const * path);
+
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -170,6 +172,8 @@ int main() {
     Shader yellowShader("resources/shaders/yellow_light.vs", "resources/shaders/yellow_light.fs");
     // dodajemo skybox shader
     Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
+    Shader textureShader("resources/shaders/texture.vs", "resources/shaders/texture.fs");
+
     // load models
     // -----------
     Model myModel("resources/objects/skull/12140_Skull_v3_L2.obj");
@@ -309,6 +313,27 @@ int main() {
     glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(5*sizeof(float)));
     glEnableVertexAttribArray(2);
 
+
+    // VBO i VAO baferi za kocku sa teksturom -TREBA LI UPOSTE?
+    unsigned int VBO_texture, VAO_texture;
+    glGenVertexArrays(1, &VAO_texture);
+    glGenBuffers(1, &VBO_texture);
+
+    glBindVertexArray(VAO_texture);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_texture);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8* sizeof(float), (void*)(5*sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    unsigned int texture = loadTexture(FileSystem::getPath("resources/textures/ophelia.jpg").c_str());
+
+    textureShader.use();
+    textureShader.setInt("texture_diffuse1", 0);
     //ucitavanje skybox modela
     stbi_set_flip_vertically_on_load(false);
     vector<std::string> faces
@@ -563,6 +588,51 @@ int main() {
         glBindVertexArray(VAO_cube);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        //kocka sa teksturama
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture);
+
+        textureShader.use();
+
+        // directional light
+        textureShader.setVec3("dirLight.direction", 0.0f, -5.0f, -15.0f);
+        textureShader.setVec3("dirLight.ambient", 0.6, 0.4f, 0.1f);
+        textureShader.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
+        textureShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
+        textureShader.setVec3("viewPosition", programState->camera.Position);
+        textureShader.setFloat("material.shininess", 126.0f);
+
+        // spotlight
+        textureShader.setVec3("spotLight.position", programState->camera.Position);
+        textureShader.setVec3("spotLight.direction", programState->camera.Front);
+        textureShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+        textureShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        textureShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        textureShader.setFloat("spotLight.constant", 1.0f);
+        textureShader.setFloat("spotLight.linear", 0.022);
+        textureShader.setFloat("spotLight.quadratic", 0.0019);
+        textureShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(10.0f)));
+        textureShader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+
+        // matrice transformacija: view, projection
+        textureShader.setMat4("projection", projection);
+        textureShader.setMat4("view", view);
+
+        // model matrica i render kocke sa teksturom
+        glm::mat4 texture_model = glm::mat4(1.0f);
+        texture_model = glm::translate(texture_model, glm::vec3(1.0f, -0.5f, 1.0f));
+        texture_model = glm::scale(texture_model, glm::vec3(5.0, 5.0, 5.0));
+        texture_model = glm::rotate (texture_model, glm::radians(0.8f), glm::vec3(1.0f, 0.0f, 0.0f));
+        textureShader.setMat4("model", texture_model);
+    /*
+        model3=glm::translate(model3, glm::vec3(-13.2, 0.27f,-1.0f));
+        model3=glm::rotate(model3, glm::radians(0.0f), glm::vec3(1,0,1));
+        model3=glm::scale(model3, glm::vec3(0.20f));
+        */
+
+        glBindVertexArray(VAO_texture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
 
         //skybox sa matricama transformacije
         glDepthMask(GL_LEQUAL);
@@ -596,7 +666,9 @@ int main() {
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glDeleteVertexArrays(1, &skyboxVAO);
+    glDeleteVertexArrays(1, &VAO_texture);
 
+    glDeleteBuffers(1, &VBO_texture);
     glDeleteBuffers(1, &skyboxVBO);
     glfwTerminate();
     return 0;
@@ -744,6 +816,49 @@ unsigned int loadCubemap(vector<std::string> faces)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+    return textureID;
+}
+
+// ucitavanje tekstura za kocku
+unsigned int loadTexture(char const * path)
+{
+    unsigned int textureID;
+    glGenTextures(1, &textureID);
+
+    int width, height, nrComponents;
+    unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+    if (data)
+    {
+        GLenum format;
+        GLenum iternal;
+        if (nrComponents == 1)
+            format = GL_RED;
+        else if (nrComponents == 3) {
+            format = GL_RGB;
+            iternal = GL_SRGB;
+        }
+        else if (nrComponents == 4) {
+            iternal = GL_SRGB_ALPHA;
+            format = GL_RGBA;
+        }
+
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexImage2D(GL_TEXTURE_2D, 0, iternal, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to prevent semi-transparent borders. Due to interpolation it takes texels from next repeat
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        stbi_image_free(data);
+    }
+    else
+    {
+        std::cout << "Texture failed to load at path: " << path << std::endl;
+        stbi_image_free(data);
+    }
 
     return textureID;
 }
