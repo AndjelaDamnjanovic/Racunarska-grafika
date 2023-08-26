@@ -26,7 +26,6 @@ void processInput(GLFWwindow* window);
 
 void key_callback(GLFWwindow* window, int key, int scancode, int action,
                   int mods);
-
 unsigned int loadTexture(char const* path);
 
 // settings
@@ -44,6 +43,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+//! Svetlo i njegove komponente predstavljamo kao strukturu.
 struct PointLight {
     glm::vec3 position;
     glm::vec3 ambient;
@@ -55,6 +55,7 @@ struct PointLight {
     float quadratic;
 };
 
+//! Stanje programa pamtimo kao strukturu
 struct ProgramState {
     glm::vec3 clearColor = glm::vec3(0);
     bool ImGuiEnabled = false;
@@ -70,6 +71,7 @@ struct ProgramState {
     void LoadFromFile(std::string filename);
 };
 
+//! Cuvamo dobijene rezultate u fajl.
 void ProgramState::SaveToFile(std::string filename) {
     std::ofstream out(filename);
     out << clearColor.r << '\n'
@@ -84,6 +86,7 @@ void ProgramState::SaveToFile(std::string filename) {
         << camera.Front.z << '\n';
 }
 
+//! Ucitavamo stanje iz fajla.
 void ProgramState::LoadFromFile(std::string filename) {
     std::ifstream in(filename);
     if ( in ) {
@@ -97,7 +100,6 @@ ProgramState* programState;
 
 void DrawImGui(ProgramState* programState);
 
-// fja za ucitavanje skyboxa
 unsigned int loadCubemap(vector<string> vector1);
 
 int main() {
@@ -705,7 +707,6 @@ int main() {
 
 // process all input: query GLFW whether relevant keys are pressed/released this
 // frame and react accordingly
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window) {
     if ( glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS )
         glfwSetWindowShouldClose(window, true);
@@ -832,7 +833,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action,
     }
 }
 
-// fja za ucitavanje tekstura iz skyboxa
+//! Funkcija za ucitavanje tekstura iz skyboxa
 unsigned int loadCubemap(vector<std::string> faces) {
     unsigned int textureID;
     glGenTextures(1, &textureID);

@@ -1,0 +1,48 @@
+\doxysection{Program\+State Struct Reference}
+\hypertarget{structProgramState}{}\label{structProgramState}\index{ProgramState@{ProgramState}}
+
+
+Stanje programa pamtimo kao strukturu.  
+
+
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structProgramState_aa036d695abb2c16721d1f64cc2072f00}\label{structProgramState_aa036d695abb2c16721d1f64cc2072f00} 
+void {\bfseries Save\+To\+File} (std\+::string filename)
+\begin{DoxyCompactList}\small\item\em Cuvamo dobijene rezultate u fajl. \end{DoxyCompactList}\item 
+\Hypertarget{structProgramState_a62cd48a2ce6b91991f977b17ce30d4d1}\label{structProgramState_a62cd48a2ce6b91991f977b17ce30d4d1} 
+void {\bfseries Load\+From\+File} (std\+::string filename)
+\begin{DoxyCompactList}\small\item\em Ucitavamo stanje iz fajla. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\Hypertarget{structProgramState_abea29704dc60f5801961c575453088e9}\label{structProgramState_abea29704dc60f5801961c575453088e9} 
+glm\+::vec3 {\bfseries clear\+Color} = glm\+::vec3(0)
+\item 
+\Hypertarget{structProgramState_a35347da3a475f0049dcb9fae1a38acc3}\label{structProgramState_a35347da3a475f0049dcb9fae1a38acc3} 
+bool {\bfseries Im\+Gui\+Enabled} = false
+\item 
+\Hypertarget{structProgramState_a8e516c3deedbd5039c221f3254cb737f}\label{structProgramState_a8e516c3deedbd5039c221f3254cb737f} 
+Camera {\bfseries camera}
+\item 
+\Hypertarget{structProgramState_ad6e0a604cf55f996ef88a12c9a0114c0}\label{structProgramState_ad6e0a604cf55f996ef88a12c9a0114c0} 
+bool {\bfseries Camera\+Mouse\+Movement\+Update\+Enabled} = true
+\item 
+\Hypertarget{structProgramState_a92d4751e846c1a31fdabd40baffd185b}\label{structProgramState_a92d4751e846c1a31fdabd40baffd185b} 
+glm\+::vec3 {\bfseries skull\+Position} = glm\+::vec3(1.\+0f)
+\item 
+\Hypertarget{structProgramState_a03c4625f90f90cfcaefa755ce895b05a}\label{structProgramState_a03c4625f90f90cfcaefa755ce895b05a} 
+float {\bfseries skull\+Scale} = 0.\+1f
+\item 
+\Hypertarget{structProgramState_a49d4cea65b5555aaca7b13468d06f7d0}\label{structProgramState_a49d4cea65b5555aaca7b13468d06f7d0} 
+\mbox{\hyperlink{structPointLight}{Point\+Light}} {\bfseries point\+Light}
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Stanje programa pamtimo kao strukturu. 
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+main.\+cpp\end{DoxyCompactItemize}
