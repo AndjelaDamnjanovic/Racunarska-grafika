@@ -1,0 +1,7 @@
+BasedOnStyle: LLVM
+Language: Cpp
+IndentWidth: 8
+BreakBeforeBraces: Linux
+ColumnLimit: 90
+
+
