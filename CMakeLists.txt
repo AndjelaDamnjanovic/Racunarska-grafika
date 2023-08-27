@@ -13,8 +13,14 @@ endfunction()
 set(CMAKE_POLICY_DEFAULT_CMP0012 NEW)
 set(CMAKE_CXX_STANDARD 14)
 
-list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -O3")
+# zelimo da dodamo razlicite rezime za prevodjenje- release i debug
+#list(APPEND CMAKE_CXX_FLAGS "-Wall -Wextra -Wno-unused-variable -Wno-unused-parameter -O3")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall -g -Wextra -Wno-unused-variable -Wno-unused-parameter -O0")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT "-O3")
+
+#set(CMAKE_CXX_FLAGS "${CXX_FLAGS} -g -Wall -Wextra --coverage")
 
 file(GLOB SOURCES "src/*.cpp" "src/*.c" src/main.cpp)
 file(GLOB HEADERS "include/*.h" "include/*.hpp")
@@ -29,19 +35,20 @@ add_subdirectory(libs/imgui)
 add_definitions(${OPENGL_DEFINITIONS})
 
 add_library(STB_IMAGE libs/stb_image.cpp)
+
 set_source_files_properties(libs/stb_image.cpp include/stb_image.h
         PROPERTIES
         COMPILE_FLAGS
         "-Wno-shift-negative-value -Wno-implicit-fallthrough")
 
-set(LIBS glfw glad OpenGL::GL X11 Xrandr Xinerama Xi Xxf86vm Xcursor dl pthread freetype ${ASSIMP_LIBRARIES} STB_IMAGE imgui)
-
+set(LIBS glfw glad OpenGL::GL X11 Xrandr Xinerama Xi Xxf86vm Xcursor dl pthread freetype ${ASSIMP_LIBRARIES} STB_IMAGE imgui gcov)
 
 configure_file(configuration/root_directory.h.in configuration/root_directory.h)
 include_directories(${CMAKE_BINARY_DIR}/configuration)
 
 
 include_directories(include/)
+
 add_executable(${PROJECT_NAME}
         ${SOURCES})
 
