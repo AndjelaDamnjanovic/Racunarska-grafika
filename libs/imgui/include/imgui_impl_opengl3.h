@@ -91,7 +91,7 @@ IMGUI_IMPL_API void ImGui_ImplOpenGL3_DestroyDeviceObjects();
 #endif
 #else
 #define IMGUI_IMPL_OPENGL_LOADER_GL3W // Default to GL3W embedded in our
-                                      // repository
+// repository
 #endif
 
 #endif

@@ -23,7 +23,7 @@ class Camera
                 Up = glm::normalize(glm::cross(Right, Front));
         }
 
-      public:
+public:
         float Zoom = 45.f;
         float MovementSpeed = 2.5f;
         float Yaw = -90.0f;
@@ -36,7 +36,9 @@ class Camera
         glm::vec3 Right;
         glm::vec3 Front = glm::vec3(0, 0, -1);
 
-        Camera() { updateCameraVectors(); }
+        Camera() {
+                updateCameraVectors();
+        }
 
         glm::mat4 GetViewMatrix() const
         {
@@ -46,19 +48,27 @@ class Camera
         void ProcessKeyboard(Direction direction, float deltaTime)
         {
                 float velocity = MovementSpeed * deltaTime;
+
                 switch (direction) {
-                case FORWARD: {
-                        Position += Front * velocity;
-                } break;
-                case BACKWARD: {
-                        Position -= Front * velocity;
-                } break;
-                case LEFT: {
-                        Position -= Right * velocity;
-                } break;
-                case RIGHT: {
-                        Position += Right * velocity;
-                } break;
+                        case FORWARD: {
+                                Position += Front * velocity;
+                        }
+                        break;
+
+                        case BACKWARD: {
+                                Position -= Front * velocity;
+                        }
+                        break;
+
+                        case LEFT: {
+                                Position -= Right * velocity;
+                        }
+                        break;
+
+                        case RIGHT: {
+                                Position += Right * velocity;
+                        }
+                        break;
                 }
         }
 
@@ -70,10 +80,12 @@ class Camera
 
                 Yaw += xoffset;
                 Pitch += yoffset;
+
                 if (constrainPitch) {
                         if (Pitch > 89.0f) {
                                 Pitch = 89.0f;
                         }
+
                         if (Pitch < -89.0f) {
                                 Pitch = -89.0f;
                         }
@@ -85,9 +97,11 @@ class Camera
         void ProcessMouseScroll(float yoffset)
         {
                 Zoom -= yoffset;
+
                 if (Zoom < 1.0f) {
                         Zoom = 1.0f;
                 }
+
                 if (Zoom > 45.0f) {
                         Zoom = 45.0f;
                 }

@@ -17,7 +17,7 @@ class Shader
 {
         unsigned int m_Id;
 
-      public:
+public:
         Shader(std::string vertexShaderPath, std::string fragmentShaderPath)
         {
                 appendShaderFolderIfNotPresent(vertexShaderPath);
@@ -35,11 +35,13 @@ class Shader
                 int success;
                 char infoLog[512];
                 glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+
                 if (!success) {
                         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
                         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
                                   << infoLog << std::endl;
                 }
+
                 // fragment shader
                 int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
                 std::string fsString = readFileContents(fragmentShaderPath);
@@ -49,11 +51,13 @@ class Shader
                 glCompileShader(fragmentShader);
                 // check for shader compile errors
                 glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+
                 if (!success) {
                         glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
                         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n"
                                   << infoLog << std::endl;
                 }
+
                 // link shaders
                 int shaderProgram = glCreateProgram();
                 glAttachShader(shaderProgram, vertexShader);
@@ -61,11 +65,13 @@ class Shader
                 glLinkProgram(shaderProgram);
                 // check for linking errors
                 glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+
                 if (!success) {
                         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
                         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n"
                                   << infoLog << std::endl;
                 }
+
                 glDeleteShader(vertexShader);
                 glDeleteShader(fragmentShader);
                 m_Id = shaderProgram;
@@ -73,7 +79,9 @@ class Shader
 
         // activate the shader
         // ------------------------------------------------------------------------
-        void use() { glUseProgram(m_Id); }
+        void use() {
+                glUseProgram(m_Id);
+        }
         // utility uniform functions
         // ------------------------------------------------------------------------
         void setBool(const std::string &name, bool value) const

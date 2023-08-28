@@ -24,7 +24,8 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 void processInput(GLFWwindow *window);
 
-void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action,
+                 int mods);
 unsigned int loadTexture(char const *path);
 
 // settings
@@ -90,10 +91,11 @@ void ProgramState::saveToFile(std::string filename)
 void ProgramState::loadFromFile(std::string filename)
 {
         std::ifstream in(filename);
+
         if (in) {
                 in >> clearColor.r >> clearColor.g >> clearColor.b >> ImGuiEnabled >>
-                    camera.Position.x >> camera.Position.y >> camera.Position.z >>
-                    camera.Front.x >> camera.Front.y >> camera.Front.z;
+                   camera.Position.x >> camera.Position.y >> camera.Position.z >>
+                   camera.Front.x >> camera.Front.y >> camera.Front.z;
         }
 }
 
@@ -119,12 +121,14 @@ int main()
         // glfw window creation
         // --------------------
         GLFWwindow *window =
-            glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+                glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+
         if (window == nullptr) {
                 std::cout << "Failed to create GLFW window" << std::endl;
                 glfwTerminate();
                 return -1;
         }
+
         glfwMakeContextCurrent(window);
         glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
         glfwSetCursorPosCallback(window, mouseCallback);
@@ -146,9 +150,11 @@ int main()
 
         programState = new ProgramState;
         programState->loadFromFile("resources/program_state.txt");
+
         if (programState->ImGuiEnabled) {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
+
         // Init Imgui
         IMGUI_CHECKVERSION();
         ImGui::CreateContext();
@@ -170,7 +176,8 @@ int main()
         Shader yellowShader("resources/shaders/yellow_light.vs",
                             "resources/shaders/yellow_light.fs");
         // dodajemo skybox shader
-        Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
+        Shader skyboxShader("resources/shaders/skybox.vs",
+                            "resources/shaders/skybox.fs");
         Shader textureShader("resources/shaders/texture.vs",
                              "resources/shaders/texture.fs");
 
@@ -200,24 +207,25 @@ int main()
 
         // skybox temena
         float skyboxVertices[] = {
-            // pozicije
-            -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
-            1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
+                // pozicije
+                -       1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f,
+                        1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f,
 
-            -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
-            -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,
+                        -1.0f, -1.0f, 1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  -1.0f,
+                        -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f, 1.0f,
 
-            1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
-            1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f,
+                        1.0f,  -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,
+                        1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f,
 
-            -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
-            1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
+                        -1.0f, -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,
+                        1.0f,  1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f, -1.0f, 1.0f,
 
-            -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
-            1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f,
+                        -1.0f, 1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  1.0f,
+                        1.0f,  1.0f,  1.0f,  -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f,  -1.0f,
 
-            -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
-            1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f};
+                        -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, -1.0f,
+                        1.0f,  -1.0f, -1.0f, -1.0f, -1.0f, 1.0f,  1.0f,  -1.0f, 1.0f
+                };
 
         unsigned int skyboxVAO, skyboxVBO;
         glGenVertexArrays(1, &skyboxVAO);
@@ -231,45 +239,45 @@ int main()
 
         // kocka na sceni
         float vertices[] = {
-            // pozicije                         // koordinate tekstura          //
-            // normale
-            -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,
-            -0.5f, 1.0f,  1.0f,  0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f, 1.0f,
-            0.0f,  0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,  -0.5f, 1.0f,  1.0f,  0.0f,
-            0.0f,  -1.0f, -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  -1.0f,
-            -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  -1.0f,
+                // pozicije                         // koordinate tekstura          //
+                // normale
+                -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,
+                        -0.5f, 1.0f,  1.0f,  0.0f,  0.0f,  -1.0f, 0.5f,  -0.5f, -0.5f, 1.0f,
+                        0.0f,  0.0f,  0.0f,  -1.0f, 0.5f,  0.5f,  -0.5f, 1.0f,  1.0f,  0.0f,
+                        0.0f,  -1.0f, -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  0.0f,  0.0f,  -1.0f,
+                        -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  0.0f,  -1.0f,
 
-            -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
-            0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  1.0f,
-            1.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
-            0.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
-            -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
+                        -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  -0.5f,
+                        0.5f,  1.0f,  0.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  1.0f,
+                        1.0f,  0.0f,  0.0f,  1.0f,  0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  0.0f,
+                        0.0f,  1.0f,  -0.5f, 0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f,  1.0f,
+                        -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  0.0f,  0.0f,  1.0f,
 
-            -0.5f, 0.5f,  0.5f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,
-            -0.5f, 1.0f,  1.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,
-            1.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  -1.0f,
-            0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
-            -0.5f, 0.5f,  0.5f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+                        -0.5f, 0.5f,  0.5f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, 0.5f,
+                        -0.5f, 1.0f,  1.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,
+                        1.0f,  -1.0f, 0.0f,  0.0f,  -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  -1.0f,
+                        0.0f,  0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
+                        -0.5f, 0.5f,  0.5f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.0f,
 
-            0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f,
-            -0.5f, 0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 1.0f,
-            1.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 0.0f,  1.0f,  1.0f,
-            0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,
-            0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+                        0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f,
+                        -0.5f, 0.0f,  1.0f,  1.0f,  0.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 1.0f,
+                        1.0f,  1.0f,  0.0f,  0.0f,  0.5f,  -0.5f, -0.5f, 0.0f,  1.0f,  1.0f,
+                        0.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  1.0f,  0.0f,  0.0f,
+                        0.5f,  -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,  0.0f,  0.0f,
 
-            -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f,
-            -0.5f, 1.0f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  1.0f,
-            0.0f,  0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,
-            -1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  0.0f,  -1.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  0.0f,  -1.0f, 0.0f,
+                        -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f,
+                        -0.5f, 1.0f,  1.0f,  0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  1.0f,
+                        0.0f,  0.0f,  -1.0f, 0.0f,  0.5f,  -0.5f, 0.5f,  1.0f,  0.0f,  0.0f,
+                        -1.0f, 0.0f,  -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  0.0f,  -1.0f, 0.0f,
+                        -0.5f, -0.5f, -0.5f, 0.0f,  1.0f,  0.0f,  -1.0f, 0.0f,
 
-            -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,
-            0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 1.0f,
-            1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-            1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
-            -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f
+                        -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,
+                        0.5f,  1.0f,  0.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  -0.5f, 1.0f,
+                        1.0f,  0.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+                        1.0f,  0.0f,  -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,  1.0f,  0.0f,
+                        -0.5f, 0.5f,  0.5f,  0.0f,  0.0f,  0.0f,  1.0f,  0.0f
 
-        };
+                };
 
         // pravimo VBO i VAO bafere za kocku
         unsigned int VBO_cube, VAO_cube;
@@ -308,7 +316,7 @@ int main()
         glEnableVertexAttribArray(2);
 
         unsigned int texture =
-            loadTexture(FileSystem::getPath("resources/textures/ophelia.jpg").c_str());
+                loadTexture(FileSystem::getPath("resources/textures/ophelia.jpg").c_str());
 
         textureShader.use();
         textureShader.setInt("texture_diffuse1", 0);
@@ -351,7 +359,7 @@ int main()
                 // don't forget to enable shader before setting uniforms
                 ourShader.use();
                 pointLight.position =
-                    glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
+                        glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
                 ourShader.setVec3("pointLight.position", pointLight.position);
                 ourShader.setVec3("pointLight.ambient", pointLight.ambient);
                 ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
@@ -364,8 +372,8 @@ int main()
 
                 // view/projection transformations
                 glm::mat4 projection =
-                    glm::perspective(glm::radians(programState->camera.Zoom),
-                                     (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+                        glm::perspective(glm::radians(programState->camera.Zoom),
+                                         (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
                 glm::mat4 view = programState->camera.GetViewMatrix();
                 ourShader.setMat4("projection", projection);
                 ourShader.setMat4("view", view);
@@ -373,15 +381,15 @@ int main()
                 // render the loaded model
                 glm::mat4 model = glm::mat4(1.0f);
                 model = glm::translate(
-                    model,
-                    glm::vec3(
-                        -7.0f, -0.13f,
-                        -0.5f)); // translate it down so it's at the center of the scene
+                                model,
+                                glm::vec3(
+                                        -7.0f, -0.13f,
+                                        -0.5f)); // translate it down so it's at the center of the scene
                 model = glm::rotate(model, glm::radians(270.0f), glm::vec3(1, 0, 0));
                 model = glm::scale(
-                    model,
-                    glm::vec3(programState->skullScale)); // it's a bit too big for our
-                                                          // scene, so scale it down
+                                model,
+                                glm::vec3(programState->skullScale)); // it's a bit too big for our
+                // scene, so scale it down
                 ourShader.setMat4("model", model);
                 myModel.Draw(ourShader);
                 // renderuj prvu belu radu
@@ -417,8 +425,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel = glm::mat4(1.0f);
                 yellowModel = glm::translate(
-                    yellowModel,
-                    glm::vec3(-17.3f, 2.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
+                                      yellowModel,
+                                      glm::vec3(-17.3f, 2.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 yellowModel = glm::scale(yellowModel, glm::vec3(0.5, 0.5, 0.5));
                 yellowShader.setMat4("model", yellowModel);
 
@@ -428,8 +436,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel1 = glm::mat4(1.0f);
                 yellowModel1 = glm::translate(
-                    yellowModel1,
-                    glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -3.2f));
+                                       yellowModel1,
+                                       glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -3.2f));
                 // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
                 yellowModel1 = glm::scale(yellowModel1, glm::vec3(0.4, 0.4, 0.4));
@@ -441,8 +449,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel2 = glm::mat4(1.0f);
                 yellowModel2 = glm::translate(
-                    yellowModel2,
-                    glm::vec3(-17.3f, 3.0f + sin(glfwGetTime()) * 1 / 3, -4.0f));
+                                       yellowModel2,
+                                       glm::vec3(-17.3f, 3.0f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
                 yellowModel2 = glm::scale(yellowModel2, glm::vec3(0.4, 0.4, 0.4));
@@ -454,8 +462,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel3 = glm::mat4(1.0f);
                 yellowModel3 = glm::translate(
-                    yellowModel3,
-                    glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -5.8f));
+                                       yellowModel3,
+                                       glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -5.8f));
                 yellowModel3 = glm::scale(yellowModel3, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel3);
 
@@ -465,8 +473,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel4 = glm::mat4(1.0f);
                 yellowModel4 = glm::translate(
-                    yellowModel4,
-                    glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -2.2f));
+                                       yellowModel4,
+                                       glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -2.2f));
                 // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
                 yellowModel4 = glm::scale(yellowModel4, glm::vec3(0.3, 0.3, 0.3));
@@ -478,8 +486,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel5 = glm::mat4(1.0f);
                 yellowModel5 = glm::translate(
-                    yellowModel5,
-                    glm::vec3(-17.3f, 3.8f + sin(glfwGetTime()) * 1 / 3, -4.0f));
+                                       yellowModel5,
+                                       glm::vec3(-17.3f, 3.8f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
                 yellowModel5 = glm::scale(yellowModel5, glm::vec3(0.3, 0.3, 0.3));
@@ -491,8 +499,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel6 = glm::mat4(1.0f);
                 yellowModel6 = glm::translate(
-                    yellowModel6,
-                    glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -6.8f));
+                                       yellowModel6,
+                                       glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -6.8f));
                 yellowModel6 = glm::scale(yellowModel6, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel6);
 
@@ -502,8 +510,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel8 = glm::mat4(1.0f);
                 yellowModel8 = glm::translate(
-                    yellowModel8,
-                    glm::vec3(-17.3f, 4.6f + sin(glfwGetTime()) * 1 / 3, -4.0f));
+                                       yellowModel8,
+                                       glm::vec3(-17.3f, 4.6f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
                 yellowModel8 = glm::scale(yellowModel8, glm::vec3(0.2, 0.2, 0.2));
@@ -515,8 +523,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel9 = glm::mat4(1.0f);
                 yellowModel9 = glm::translate(
-                    yellowModel9,
-                    glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -7.6f));
+                                       yellowModel9,
+                                       glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -7.6f));
                 yellowModel9 = glm::scale(yellowModel9, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel9);
 
@@ -526,8 +534,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel10 = glm::mat4(1.0f);
                 yellowModel10 = glm::translate(
-                    yellowModel10,
-                    glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -1.4f));
+                                        yellowModel10,
+                                        glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -1.4f));
                 yellowModel10 = glm::scale(yellowModel10, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel10);
 
@@ -537,8 +545,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel11 = glm::mat4(1.0f);
                 yellowModel11 = glm::translate(
-                    yellowModel11,
-                    glm::vec3(-18.0f, 2.9f + sin(glfwGetTime()) * 1 / 3, -3.7f));
+                                        yellowModel11,
+                                        glm::vec3(-18.0f, 2.9f + sin(glfwGetTime()) * 1 / 3, -3.7f));
                 yellowModel11 = glm::scale(yellowModel11, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel11);
 
@@ -548,8 +556,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel12 = glm::mat4(1.0f);
                 yellowModel12 = glm::translate(
-                    yellowModel12,
-                    glm::vec3(-18.5f, 3.5f + sin(glfwGetTime()) * 1 / 3, -3.2f));
+                                        yellowModel12,
+                                        glm::vec3(-18.5f, 3.5f + sin(glfwGetTime()) * 1 / 3, -3.2f));
                 yellowModel12 = glm::scale(yellowModel12, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel12);
 
@@ -559,8 +567,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel13 = glm::mat4(1.0f);
                 yellowModel13 = glm::translate(
-                    yellowModel13,
-                    glm::vec3(-18.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -2.8f));
+                                        yellowModel13,
+                                        glm::vec3(-18.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -2.8f));
                 yellowModel13 = glm::scale(yellowModel13, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel13);
 
@@ -570,8 +578,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel14 = glm::mat4(1.0f);
                 yellowModel14 = glm::translate(
-                    yellowModel14,
-                    glm::vec3(-16.6f, 2.9f + sin(glfwGetTime()) * 1 / 3, -4.3f));
+                                        yellowModel14,
+                                        glm::vec3(-16.6f, 2.9f + sin(glfwGetTime()) * 1 / 3, -4.3f));
                 yellowModel14 = glm::scale(yellowModel14, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel14);
 
@@ -581,8 +589,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel15 = glm::mat4(1.0f);
                 yellowModel15 = glm::translate(
-                    yellowModel15,
-                    glm::vec3(-16.1f, 3.5f + sin(glfwGetTime()) * 1 / 3, -4.7f));
+                                        yellowModel15,
+                                        glm::vec3(-16.1f, 3.5f + sin(glfwGetTime()) * 1 / 3, -4.7f));
                 yellowModel15 = glm::scale(yellowModel15, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel15);
 
@@ -592,8 +600,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 yellowModel16 = glm::mat4(1.0f);
                 yellowModel16 = glm::translate(
-                    yellowModel16,
-                    glm::vec3(-15.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -5.1f));
+                                        yellowModel16,
+                                        glm::vec3(-15.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -5.1f));
                 yellowModel16 = glm::scale(yellowModel16, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel16);
 
@@ -607,8 +615,8 @@ int main()
                 // model matrica i render kocke
                 glm::mat4 blueModel = glm::mat4(1.0f);
                 blueModel = glm::translate(
-                    blueModel,
-                    glm::vec3(-15.3f, 10.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
+                                    blueModel,
+                                    glm::vec3(-15.3f, 10.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 blueModel = glm::scale(blueModel, glm::vec3(0.5, 0.5, 0.5));
                 blueShader.setMat4("model", blueModel);
 
@@ -650,10 +658,10 @@ int main()
                 // model matrica i render kocke sa teksturom
                 glm::mat4 textureModel = glm::mat4(1.0f);
                 textureModel =
-                    glm::translate(textureModel, glm::vec3(1.0f, -0.5f, 1.0f));
+                        glm::translate(textureModel, glm::vec3(1.0f, -0.5f, 1.0f));
                 textureModel = glm::scale(textureModel, glm::vec3(5.0, 5.0, 5.0));
                 textureModel = glm::rotate(textureModel, glm::radians(0.8f),
-                                            glm::vec3(1.0f, 0.0f, 0.0f));
+                                           glm::vec3(1.0f, 0.0f, 0.0f));
                 textureShader.setMat4("model", textureModel);
                 /*
                     model3=glm::translate(model3, glm::vec3(-13.2, 0.27f,-1.0f));
@@ -681,8 +689,10 @@ int main()
                 glBindVertexArray(0);
                 glDepthMask(GL_LESS > 0 ? GL_TRUE : GL_FALSE);
 
-                if (programState->ImGuiEnabled)
+                if (programState->ImGuiEnabled) {
                         drawImGui(programState);
+                }
+
                 // glfw: swap buffers and poll IO events (keys pressed/released, mouse
                 // moved etc.)
                 // -------------------------------------------------------------------------------
@@ -710,17 +720,25 @@ int main()
 // frame and react accordingly
 void processInput(GLFWwindow *window)
 {
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
                 glfwSetWindowShouldClose(window, true);
+        }
 
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
                 programState->camera.ProcessKeyboard(FORWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
                 programState->camera.ProcessKeyboard(BACKWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
                 programState->camera.ProcessKeyboard(LEFT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
                 programState->camera.ProcessKeyboard(RIGHT, deltaTime);
+        }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
@@ -746,13 +764,14 @@ void mouseCallback(GLFWwindow *window, double xpos, double ypos)
 
         float xoffset = xpos - lastX;
         float yoffset =
-            lastY - ypos; // reversed since y-coordinates go from bottom to top
+                lastY - ypos; // reversed since y-coordinates go from bottom to top
 
         lastX = xpos;
         lastY = ypos;
 
-        if (programState->CameraMouseMovementUpdateEnabled)
+        if (programState->CameraMouseMovementUpdateEnabled) {
                 programState->camera.ProcessMouseMovement(xoffset, yoffset);
+        }
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
@@ -806,13 +825,16 @@ void drawImGui(ProgramState *programState)
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void keyCallback(GLFWwindow *window, int key, int scancode, int action,
+                 int mods)
 {
         if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
                 programState->ImGuiEnabled = !programState->ImGuiEnabled;
+
                 if (programState->ImGuiEnabled) {
                         programState->CameraMouseMovementUpdateEnabled = false;
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
                 } else {
                         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
                 }
@@ -845,20 +867,25 @@ unsigned int loadCubemap(vector<std::string> faces)
         glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
 
         int width, height, nrChannels;
+
         for (unsigned int i = 0; i < faces.size(); i++) {
                 unsigned char *data =
-                    stbi_load((faces[i].c_str()), &width, &height, &nrChannels, 0);
+                        stbi_load((faces[i].c_str()), &width, &height, &nrChannels, 0);
+
                 if (data) {
                         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB,
                                      width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+
                 } else {
                         std::cout
-                            << "Cubemap texture failed to load at path: " << faces[i]
-                            << std::endl;
+                                        << "Cubemap texture failed to load at path: " << faces[i]
+                                        << std::endl;
                         stbi_image_free(data);
                 }
+
                 stbi_image_free(data);
         }
+
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -876,14 +903,19 @@ unsigned int loadTexture(char const *path)
 
         int width, height, nrComponents;
         unsigned char *data = stbi_load(path, &width, &height, &nrComponents, 0);
+
         if (data) {
                 GLenum format;
                 GLenum iternal;
-                if (nrComponents == 1)
+
+                if (nrComponents == 1) {
                         format = GL_RED;
+                }
+
                 else if (nrComponents == 3) {
                         format = GL_RGB;
                         iternal = GL_SRGB;
+
                 } else if (nrComponents == 4) {
                         iternal = GL_SRGB_ALPHA;
                         format = GL_RGBA;
@@ -895,12 +927,12 @@ unsigned int loadTexture(char const *path)
                 glGenerateMipmap(GL_TEXTURE_2D);
 
                 glTexParameteri(
-                    GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
-                    format == GL_RGBA
+                        GL_TEXTURE_2D, GL_TEXTURE_WRAP_S,
+                        format == GL_RGBA
                         ? GL_CLAMP_TO_EDGE
                         : GL_REPEAT); // for this tutorial: use GL_CLAMP_TO_EDGE to
-                                      // prevent semi-transparent borders. Due to
-                                      // interpolation it takes texels from next repeat
+                // prevent semi-transparent borders. Due to
+                // interpolation it takes texels from next repeat
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T,
                                 format == GL_RGBA ? GL_CLAMP_TO_EDGE : GL_REPEAT);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
@@ -908,6 +940,7 @@ unsigned int loadTexture(char const *path)
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
                 stbi_image_free(data);
+
         } else {
                 std::cout << "Texture failed to load at path: " << path << std::endl;
                 stbi_image_free(data);

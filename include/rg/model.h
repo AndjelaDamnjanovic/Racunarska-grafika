@@ -16,12 +16,14 @@
 #include <rg/Error.h>
 class Model
 {
-      public:
+public:
         std::vector<Mesh> meshes;
         std::vector<Texture> loaded_textures;
 
         std::string directory;
-        Model(std::string path) { loadModel(path); }
+        Model(std::string path) {
+                loadModel(path);
+        }
 
         void Draw(Shader &shader)
         {
@@ -30,19 +32,20 @@ class Model
                 }
         }
 
-      private:
+private:
         void loadModel(std::string path)
         {
                 Assimp::Importer importer;
                 const aiScene *scene = importer.ReadFile(
-                    path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-                              aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+                                               path, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                               aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
                 if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
-                    !scene->mRootNode) {
+                                !scene->mRootNode) {
                         ASSERT(false, "Failed to load a model!");
                         return;
                 }
+
                 this->directory = path.substr(0, path.find_last_of('/'));
                 processNode(scene->mRootNode, scene);
         }
@@ -92,6 +95,7 @@ class Model
                         } else {
                                 vertex.TexCoords = glm::vec2(0.0);
                         }
+
                         vertices.push_back(vertex);
                 }
 
@@ -142,7 +146,7 @@ class Model
                         if (!skip) {
                                 Texture texture;
                                 texture.id =
-                                    TextureFromFile(str.C_Str(), this->directory);
+                                        TextureFromFile(str.C_Str(), this->directory);
                                 texture.type = typeName;
                                 texture.path = str.C_Str();
                                 textures.push_back(texture);
@@ -161,16 +165,21 @@ unsigned int TextureFromFile(const char *filename, std::string directory)
 
         int width, height, nrComponents;
         unsigned char *data =
-            stbi_load(fullPath.c_str(), &width, &height, &nrComponents, 0);
+                stbi_load(fullPath.c_str(), &width, &height, &nrComponents, 0);
+
         if (data) {
                 GLenum format;
+
                 if (nrComponents == 1) {
                         format = GL_RED;
+
                 } else if (nrComponents == 3) {
                         format = GL_RGB;
+
                 } else if (nrComponents == 4) {
                         format = GL_RGBA;
                 }
+
                 glBindTexture(GL_TEXTURE_2D, textureID);
                 glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
                              GL_UNSIGNED_BYTE, data);
@@ -185,6 +194,7 @@ unsigned int TextureFromFile(const char *filename, std::string directory)
         } else {
                 ASSERT(false, "Failed to load texture image");
         }
+
         stbi_image_free(data);
         return textureID;
 }

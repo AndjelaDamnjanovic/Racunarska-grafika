@@ -21,20 +21,20 @@ struct Vertex {
 struct Texture {
         unsigned int id;
         std::string type; // texture_diffuse, texture_specular, texture_normal,
-                          // texture_height
+        // texture_height
         std::string path;
 };
 
 class Mesh
 {
-      public:
+public:
         std::vector<Vertex> vertices;
         std::vector<unsigned int> indices;
         std::vector<Texture> textures;
 
         Mesh(const std::vector<Vertex> &vs, const std::vector<unsigned int> &ind,
              const std::vector<Texture> &tex)
-            : vertices(vs), indices(ind), textures(tex)
+                : vertices(vs), indices(ind), textures(tex)
         {
                 setupMesh();
         }
@@ -53,15 +53,20 @@ class Mesh
 
                         if (name == "texture_diffuse") {
                                 number = std::to_string(diffuseNr++); // 1
+
                         } else if (name == "texture_specular") {
                                 number = std::to_string(specularNr++);
+
                         } else if (name == "texture_normal") {
                                 number = std::to_string(normalNr++);
+
                         } else if (name == "texture_height") {
                                 number = std::to_string(heightNr++);
+
                         } else {
                                 ASSERT(false, "Unknown texture type");
                         }
+
                         name.append(number);
                         shader.setInt(name, i); // texture_diffuse1
                         glBindTexture(GL_TEXTURE_2D, textures[i].id);
@@ -74,7 +79,7 @@ class Mesh
                 glActiveTexture(GL_TEXTURE0);
         }
 
-      private:
+private:
         unsigned int VAO;
         void setupMesh()
         {
