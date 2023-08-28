@@ -88,8 +88,8 @@ Index of this file:
 #define IM_OFFSETOF(_TYPE,_MEMBER)  ((size_t)&(((_TYPE*)0)->_MEMBER))           // Offset of _MEMBER within _TYPE. Old style macro.
 #endif
 #if !defined(IMGUI_USE_STB_SPRINTF) && defined(__clang__)
-#define IM_FMTARGS(FMT)             __attribute__((format(printf, FMT, FMT+1)))     // Apply printf-style warnings to our formatting functions.
-#define IM_FMTLIST(FMT)             __attribute__((format(printf, FMT, 0)))
+#define IM_FMTARGS(FMT)             __attribute__((format(printf, const FMT, FMT+1)))     // Apply printf-style warnings to our formatting functions.
+#define IM_FMTLIST(FMT)             __attribute__((format(printf, const FMT, 0)))
 #elif !defined(IMGUI_USE_STB_SPRINTF) && defined(__GNUC__) && defined(__MINGW32__)
 #define IM_FMTARGS(FMT)             __attribute__((format(gnu_printf, FMT, FMT+1))) // Apply printf-style warnings to our formatting functions.
 #define IM_FMTLIST(FMT)             __attribute__((format(gnu_printf, FMT, 0)))
