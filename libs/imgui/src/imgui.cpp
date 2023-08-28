@@ -2099,7 +2099,6 @@ void ImGuiTextBuffer::append(const char* str, const char* str_end)
 void ImGuiTextBuffer::appendf(const char* fmt, ...)
 {
     va_list args;
-    va_start(args, fmt);
     appendfv(fmt, args);
     va_end(args);
 }
@@ -2108,6 +2107,7 @@ void ImGuiTextBuffer::appendf(const char* fmt, ...)
 void ImGuiTextBuffer::appendfv(const char* fmt, va_list args)
 {
     va_list args_copy;
+    va_start(args, fmt);
     va_copy(args_copy, args);
 
     int len = ImFormatStringV(NULL, 0, fmt, args);         // FIXME-OPT: could do a first pass write attempt, likely successful on first pass.
