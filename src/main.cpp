@@ -16,15 +16,15 @@
 
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void framebufferSizeCallback(GLFWwindow *window, int width, int height);
 
-void mouse_callback(GLFWwindow *window, double xpos, double ypos);
+void mouseCallback(GLFWwindow *window, double xpos, double ypos);
 
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset);
+void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 
 void processInput(GLFWwindow *window);
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods);
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 unsigned int loadTexture(char const *path);
 
 // settings
@@ -65,13 +65,13 @@ struct ProgramState {
         PointLight pointLight;
         ProgramState() : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
 
-        void SaveToFile(std::string filename);
+        void saveToFile(std::string filename);
 
-        void LoadFromFile(std::string filename);
+        void loadFromFile(std::string filename);
 };
 
 //! Cuvamo dobijene rezultate u fajl.
-void ProgramState::SaveToFile(std::string filename)
+void ProgramState::saveToFile(std::string filename)
 {
         std::ofstream out(filename);
         out << clearColor.r << '\n'
@@ -87,7 +87,7 @@ void ProgramState::SaveToFile(std::string filename)
 }
 
 //! Ucitavamo stanje iz fajla.
-void ProgramState::LoadFromFile(std::string filename)
+void ProgramState::loadFromFile(std::string filename)
 {
         std::ifstream in(filename);
         if (in) {
@@ -99,7 +99,7 @@ void ProgramState::LoadFromFile(std::string filename)
 
 ProgramState *programState;
 
-void DrawImGui(ProgramState *programState);
+void drawImGui(ProgramState *programState);
 
 unsigned int loadCubemap(vector<string> vector1);
 
@@ -119,17 +119,17 @@ int main()
         // glfw window creation
         // --------------------
         GLFWwindow *window =
-            glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-        if (window == NULL) {
+            glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+        if (window == nullptr) {
                 std::cout << "Failed to create GLFW window" << std::endl;
                 glfwTerminate();
                 return -1;
         }
         glfwMakeContextCurrent(window);
-        glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-        glfwSetCursorPosCallback(window, mouse_callback);
-        glfwSetScrollCallback(window, scroll_callback);
-        glfwSetKeyCallback(window, key_callback);
+        glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
+        glfwSetCursorPosCallback(window, mouseCallback);
+        glfwSetScrollCallback(window, scrollCallback);
+        glfwSetKeyCallback(window, keyCallback);
         // tell GLFW to capture our mouse
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -145,7 +145,7 @@ int main()
         stbi_set_flip_vertically_on_load(true);
 
         programState = new ProgramState;
-        programState->LoadFromFile("resources/program_state.txt");
+        programState->loadFromFile("resources/program_state.txt");
         if (programState->ImGuiEnabled) {
                 glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
         }
@@ -226,7 +226,7 @@ int main()
         glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices,
                      GL_STATIC_DRAW);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
 
         // kocka na sceni
@@ -280,7 +280,7 @@ int main()
         glBindBuffer(GL_ARRAY_BUFFER, VBO_cube);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                               (void *)(3 * sizeof(float)));
@@ -298,7 +298,7 @@ int main()
         glBindBuffer(GL_ARRAY_BUFFER, VBO_texture);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), nullptr);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float),
                               (void *)(3 * sizeof(float)));
@@ -415,187 +415,187 @@ int main()
                 yellowShader.setMat4("view", view);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model = glm::mat4(1.0f);
-                yellow_model = glm::translate(
-                    yellow_model,
+                glm::mat4 yellowModel = glm::mat4(1.0f);
+                yellowModel = glm::translate(
+                    yellowModel,
                     glm::vec3(-17.3f, 2.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                yellow_model = glm::scale(yellow_model, glm::vec3(0.5, 0.5, 0.5));
-                yellowShader.setMat4("model", yellow_model);
+                yellowModel = glm::scale(yellowModel, glm::vec3(0.5, 0.5, 0.5));
+                yellowShader.setMat4("model", yellowModel);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model1 = glm::mat4(1.0f);
-                yellow_model1 = glm::translate(
-                    yellow_model1,
+                glm::mat4 yellowModel1 = glm::mat4(1.0f);
+                yellowModel1 = glm::translate(
+                    yellowModel1,
                     glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -3.2f));
-                // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f,
+                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
-                yellow_model1 = glm::scale(yellow_model1, glm::vec3(0.4, 0.4, 0.4));
-                yellowShader.setMat4("model", yellow_model1);
+                yellowModel1 = glm::scale(yellowModel1, glm::vec3(0.4, 0.4, 0.4));
+                yellowShader.setMat4("model", yellowModel1);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model2 = glm::mat4(1.0f);
-                yellow_model2 = glm::translate(
-                    yellow_model2,
+                glm::mat4 yellowModel2 = glm::mat4(1.0f);
+                yellowModel2 = glm::translate(
+                    yellowModel2,
                     glm::vec3(-17.3f, 3.0f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f,
+                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
-                yellow_model2 = glm::scale(yellow_model2, glm::vec3(0.4, 0.4, 0.4));
-                yellowShader.setMat4("model", yellow_model2);
+                yellowModel2 = glm::scale(yellowModel2, glm::vec3(0.4, 0.4, 0.4));
+                yellowShader.setMat4("model", yellowModel2);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model3 = glm::mat4(1.0f);
-                yellow_model3 = glm::translate(
-                    yellow_model3,
+                glm::mat4 yellowModel3 = glm::mat4(1.0f);
+                yellowModel3 = glm::translate(
+                    yellowModel3,
                     glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -5.8f));
-                yellow_model3 = glm::scale(yellow_model3, glm::vec3(0.4, 0.4, 0.4));
-                yellowShader.setMat4("model", yellow_model3);
+                yellowModel3 = glm::scale(yellowModel3, glm::vec3(0.4, 0.4, 0.4));
+                yellowShader.setMat4("model", yellowModel3);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model4 = glm::mat4(1.0f);
-                yellow_model4 = glm::translate(
-                    yellow_model4,
+                glm::mat4 yellowModel4 = glm::mat4(1.0f);
+                yellowModel4 = glm::translate(
+                    yellowModel4,
                     glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -2.2f));
-                // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f,
+                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
-                yellow_model4 = glm::scale(yellow_model4, glm::vec3(0.3, 0.3, 0.3));
-                yellowShader.setMat4("model", yellow_model4);
+                yellowModel4 = glm::scale(yellowModel4, glm::vec3(0.3, 0.3, 0.3));
+                yellowShader.setMat4("model", yellowModel4);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model5 = glm::mat4(1.0f);
-                yellow_model5 = glm::translate(
-                    yellow_model5,
+                glm::mat4 yellowModel5 = glm::mat4(1.0f);
+                yellowModel5 = glm::translate(
+                    yellowModel5,
                     glm::vec3(-17.3f, 3.8f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f,
+                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
-                yellow_model5 = glm::scale(yellow_model5, glm::vec3(0.3, 0.3, 0.3));
-                yellowShader.setMat4("model", yellow_model5);
+                yellowModel5 = glm::scale(yellowModel5, glm::vec3(0.3, 0.3, 0.3));
+                yellowShader.setMat4("model", yellowModel5);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model6 = glm::mat4(1.0f);
-                yellow_model6 = glm::translate(
-                    yellow_model6,
+                glm::mat4 yellowModel6 = glm::mat4(1.0f);
+                yellowModel6 = glm::translate(
+                    yellowModel6,
                     glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -6.8f));
-                yellow_model6 = glm::scale(yellow_model6, glm::vec3(0.3, 0.3, 0.3));
-                yellowShader.setMat4("model", yellow_model6);
+                yellowModel6 = glm::scale(yellowModel6, glm::vec3(0.3, 0.3, 0.3));
+                yellowShader.setMat4("model", yellowModel6);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model8 = glm::mat4(1.0f);
-                yellow_model8 = glm::translate(
-                    yellow_model8,
+                glm::mat4 yellowModel8 = glm::mat4(1.0f);
+                yellowModel8 = glm::translate(
+                    yellowModel8,
                     glm::vec3(-17.3f, 4.6f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                // yellow_model1 = glm::translate(yellow_model1, glm::vec3(-17.8f, 2.2f,
+                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
                 // -3.5f));
-                yellow_model8 = glm::scale(yellow_model8, glm::vec3(0.2, 0.2, 0.2));
-                yellowShader.setMat4("model", yellow_model8);
+                yellowModel8 = glm::scale(yellowModel8, glm::vec3(0.2, 0.2, 0.2));
+                yellowShader.setMat4("model", yellowModel8);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model9 = glm::mat4(1.0f);
-                yellow_model9 = glm::translate(
-                    yellow_model9,
+                glm::mat4 yellowModel9 = glm::mat4(1.0f);
+                yellowModel9 = glm::translate(
+                    yellowModel9,
                     glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -7.6f));
-                yellow_model9 = glm::scale(yellow_model9, glm::vec3(0.2, 0.2, 0.2));
-                yellowShader.setMat4("model", yellow_model9);
+                yellowModel9 = glm::scale(yellowModel9, glm::vec3(0.2, 0.2, 0.2));
+                yellowShader.setMat4("model", yellowModel9);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model10 = glm::mat4(1.0f);
-                yellow_model10 = glm::translate(
-                    yellow_model10,
+                glm::mat4 yellowModel10 = glm::mat4(1.0f);
+                yellowModel10 = glm::translate(
+                    yellowModel10,
                     glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -1.4f));
-                yellow_model10 = glm::scale(yellow_model10, glm::vec3(0.2, 0.2, 0.2));
-                yellowShader.setMat4("model", yellow_model10);
+                yellowModel10 = glm::scale(yellowModel10, glm::vec3(0.2, 0.2, 0.2));
+                yellowShader.setMat4("model", yellowModel10);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model11 = glm::mat4(1.0f);
-                yellow_model11 = glm::translate(
-                    yellow_model11,
+                glm::mat4 yellowModel11 = glm::mat4(1.0f);
+                yellowModel11 = glm::translate(
+                    yellowModel11,
                     glm::vec3(-18.0f, 2.9f + sin(glfwGetTime()) * 1 / 3, -3.7f));
-                yellow_model11 = glm::scale(yellow_model11, glm::vec3(0.4, 0.4, 0.4));
-                yellowShader.setMat4("model", yellow_model11);
+                yellowModel11 = glm::scale(yellowModel11, glm::vec3(0.4, 0.4, 0.4));
+                yellowShader.setMat4("model", yellowModel11);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model12 = glm::mat4(1.0f);
-                yellow_model12 = glm::translate(
-                    yellow_model12,
+                glm::mat4 yellowModel12 = glm::mat4(1.0f);
+                yellowModel12 = glm::translate(
+                    yellowModel12,
                     glm::vec3(-18.5f, 3.5f + sin(glfwGetTime()) * 1 / 3, -3.2f));
-                yellow_model12 = glm::scale(yellow_model12, glm::vec3(0.3, 0.3, 0.3));
-                yellowShader.setMat4("model", yellow_model12);
+                yellowModel12 = glm::scale(yellowModel12, glm::vec3(0.3, 0.3, 0.3));
+                yellowShader.setMat4("model", yellowModel12);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model13 = glm::mat4(1.0f);
-                yellow_model13 = glm::translate(
-                    yellow_model13,
+                glm::mat4 yellowModel13 = glm::mat4(1.0f);
+                yellowModel13 = glm::translate(
+                    yellowModel13,
                     glm::vec3(-18.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -2.8f));
-                yellow_model13 = glm::scale(yellow_model13, glm::vec3(0.2, 0.2, 0.2));
-                yellowShader.setMat4("model", yellow_model13);
+                yellowModel13 = glm::scale(yellowModel13, glm::vec3(0.2, 0.2, 0.2));
+                yellowShader.setMat4("model", yellowModel13);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model14 = glm::mat4(1.0f);
-                yellow_model14 = glm::translate(
-                    yellow_model14,
+                glm::mat4 yellowModel14 = glm::mat4(1.0f);
+                yellowModel14 = glm::translate(
+                    yellowModel14,
                     glm::vec3(-16.6f, 2.9f + sin(glfwGetTime()) * 1 / 3, -4.3f));
-                yellow_model14 = glm::scale(yellow_model14, glm::vec3(0.4, 0.4, 0.4));
-                yellowShader.setMat4("model", yellow_model14);
+                yellowModel14 = glm::scale(yellowModel14, glm::vec3(0.4, 0.4, 0.4));
+                yellowShader.setMat4("model", yellowModel14);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model15 = glm::mat4(1.0f);
-                yellow_model15 = glm::translate(
-                    yellow_model15,
+                glm::mat4 yellowModel15 = glm::mat4(1.0f);
+                yellowModel15 = glm::translate(
+                    yellowModel15,
                     glm::vec3(-16.1f, 3.5f + sin(glfwGetTime()) * 1 / 3, -4.7f));
-                yellow_model15 = glm::scale(yellow_model15, glm::vec3(0.3, 0.3, 0.3));
-                yellowShader.setMat4("model", yellow_model15);
+                yellowModel15 = glm::scale(yellowModel15, glm::vec3(0.3, 0.3, 0.3));
+                yellowShader.setMat4("model", yellowModel15);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
-                glm::mat4 yellow_model16 = glm::mat4(1.0f);
-                yellow_model16 = glm::translate(
-                    yellow_model16,
+                glm::mat4 yellowModel16 = glm::mat4(1.0f);
+                yellowModel16 = glm::translate(
+                    yellowModel16,
                     glm::vec3(-15.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -5.1f));
-                yellow_model16 = glm::scale(yellow_model16, glm::vec3(0.2, 0.2, 0.2));
-                yellowShader.setMat4("model", yellow_model16);
+                yellowModel16 = glm::scale(yellowModel16, glm::vec3(0.2, 0.2, 0.2));
+                yellowShader.setMat4("model", yellowModel16);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -605,12 +605,12 @@ int main()
                 blueShader.setMat4("view", view);
 
                 // model matrica i render kocke
-                glm::mat4 blue_model = glm::mat4(1.0f);
-                blue_model = glm::translate(
-                    blue_model,
+                glm::mat4 blueModel = glm::mat4(1.0f);
+                blueModel = glm::translate(
+                    blueModel,
                     glm::vec3(-15.3f, 10.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                blue_model = glm::scale(blue_model, glm::vec3(0.5, 0.5, 0.5));
-                blueShader.setMat4("model", blue_model);
+                blueModel = glm::scale(blueModel, glm::vec3(0.5, 0.5, 0.5));
+                blueShader.setMat4("model", blueModel);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -648,13 +648,13 @@ int main()
                 textureShader.setMat4("view", view);
 
                 // model matrica i render kocke sa teksturom
-                glm::mat4 texture_model = glm::mat4(1.0f);
-                texture_model =
-                    glm::translate(texture_model, glm::vec3(1.0f, -0.5f, 1.0f));
-                texture_model = glm::scale(texture_model, glm::vec3(5.0, 5.0, 5.0));
-                texture_model = glm::rotate(texture_model, glm::radians(0.8f),
+                glm::mat4 textureModel = glm::mat4(1.0f);
+                textureModel =
+                    glm::translate(textureModel, glm::vec3(1.0f, -0.5f, 1.0f));
+                textureModel = glm::scale(textureModel, glm::vec3(5.0, 5.0, 5.0));
+                textureModel = glm::rotate(textureModel, glm::radians(0.8f),
                                             glm::vec3(1.0f, 0.0f, 0.0f));
-                textureShader.setMat4("model", texture_model);
+                textureShader.setMat4("model", textureModel);
                 /*
                     model3=glm::translate(model3, glm::vec3(-13.2, 0.27f,-1.0f));
                     model3=glm::rotate(model3, glm::radians(0.0f), glm::vec3(1,0,1));
@@ -682,7 +682,7 @@ int main()
                 glDepthMask(GL_LESS > 0 ? GL_TRUE : GL_FALSE);
 
                 if (programState->ImGuiEnabled)
-                        DrawImGui(programState);
+                        drawImGui(programState);
                 // glfw: swap buffers and poll IO events (keys pressed/released, mouse
                 // moved etc.)
                 // -------------------------------------------------------------------------------
@@ -690,7 +690,7 @@ int main()
                 glfwPollEvents();
         }
 
-        programState->SaveToFile("resources/program_state.txt");
+        programState->saveToFile("resources/program_state.txt");
         delete programState;
         ImGui_ImplOpenGL3_Shutdown();
         ImGui_ImplGlfw_Shutdown();
@@ -726,7 +726,7 @@ void processInput(GLFWwindow *window)
 // glfw: whenever the window size changed (by OS or user resize) this callback
 // function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow *window, int width, int height)
+void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
         // make sure the viewport matches the new window dimensions; note that width
         // and height will be significantly larger than specified on retina
@@ -736,7 +736,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 
 // glfw: whenever the mouse moves, this callback is called
 // -------------------------------------------------------
-void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+void mouseCallback(GLFWwindow *window, double xpos, double ypos)
 {
         if (firstMouse) {
                 lastX = xpos;
@@ -757,13 +757,13 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
+void scrollCallback(GLFWwindow *window, double xoffset, double yoffset)
 {
         programState->camera.ProcessMouseScroll(yoffset);
 }
 
 // TO DO : skloni sve osim modela sa scene
-void DrawImGui(ProgramState *programState)
+void drawImGui(ProgramState *programState)
 {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -806,7 +806,7 @@ void DrawImGui(ProgramState *programState)
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
-void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
         if (key == GLFW_KEY_F1 && action == GLFW_PRESS) {
                 programState->ImGuiEnabled = !programState->ImGuiEnabled;
