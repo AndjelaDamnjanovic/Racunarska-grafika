@@ -25,11 +25,14 @@ void scrollCallback(GLFWwindow *window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
+
 unsigned int loadTexture(char const *path);
 
+void setOurLights(Shader shader);
+
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+ unsigned int SCR_WIDTH = 800;
+ unsigned int SCR_HEIGHT = 600;
 float exposure = 0.5f;
 
 // camera
@@ -37,6 +40,11 @@ float exposure = 0.5f;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
+
+// postavljenje naseg osvetljenja na scenu
+bool spotLightOn = false;
+bool blinn = true;
+glm::vec3 lightPosition(-5.0f, 4.3f, 2.6f);
 
 // timing
 float deltaTime = 0.0f;
@@ -164,8 +172,8 @@ int main()
 
         // build and compile shaders
         // -------------------------
-        Shader ourShader("resources/shaders/2.model_lighting.vs",
-                         "resources/shaders/2.model_lighting.fs");
+        Shader ourShader("resources/shaders/modelLighting.vs",
+                         "resources/shaders/modelLighting.fs");
         // shader za kocku
         Shader yellowShader("resources/shaders/yellow_light.vs",
                             "resources/shaders/yellow_light.fs");
@@ -350,25 +358,15 @@ int main()
 
                 // don't forget to enable shader before setting uniforms
                 ourShader.use();
-                pointLight.position =
-                    glm::vec3(4.0 * cos(currentFrame), 4.0f, 4.0 * sin(currentFrame));
-                ourShader.setVec3("pointLight.position", pointLight.position);
-                ourShader.setVec3("pointLight.ambient", pointLight.ambient);
-                ourShader.setVec3("pointLight.diffuse", pointLight.diffuse);
-                ourShader.setVec3("pointLight.specular", pointLight.specular);
-                ourShader.setFloat("pointLight.constant", pointLight.constant);
-                ourShader.setFloat("pointLight.linear", pointLight.linear);
-                ourShader.setFloat("pointLight.quadratic", pointLight.quadratic);
-                ourShader.setVec3("viewPosition", programState->camera.Position);
-                ourShader.setFloat("material.shininess", 32.0f);
+                setOurLights(ourShader);
 
                 // view/projection transformations
-                glm::mat4 projection =
-                    glm::perspective(glm::radians(programState->camera.Zoom),
-                                     (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+                glm::mat4 projection = glm::perspective(glm::radians(programState->camera.Zoom),
+                                                    (float) SCR_WIDTH / (float) SCR_HEIGHT, 0.1f, 100.0f);
                 glm::mat4 view = programState->camera.GetViewMatrix();
                 ourShader.setMat4("projection", projection);
                 ourShader.setMat4("view", view);
+                ourShader.setInt("blinn", blinn);
 
                 // render the loaded model
                 glm::mat4 model = glm::mat4(1.0f);
@@ -706,6 +704,45 @@ int main()
         return 0;
 }
 
+void setOurLights(Shader shader){
+    shader.setVec3("light.position", lightPosition);
+    shader.setVec3("viewPos", programState->camera.Position);
+
+    // direkciono svetlo
+    shader.setVec3("dirLight.direction", 0.0f, -1.0, 0.0f);
+    shader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+    shader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+    shader.setVec3("dirLight.specular", 0.4f, 0.4f, 0.4f);
+
+    // osobine pointlight svetla
+    shader.setVec3("pointLights[0].position", lightPosition);
+    shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+    shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+    shader.setVec3("pointLights[0].specular", 0.4f, 0.4f, 0.4f);
+    shader.setFloat("pointLights[0].constant", 1.0f);
+    shader.setFloat("pointLights[0].linear", 0.09f);
+    shader.setFloat("pointLights[0].quadratic", 0.032f);
+
+    // spotLight
+    shader.setVec3("spotLight.position", programState->camera.Position);
+    shader.setVec3("spotLight.direction", programState->camera.Front);
+    shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+
+    if(spotLightOn){
+        shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+        shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+    }else{
+        shader.setVec3("spotLight.diffuse", 0.0f, 0.0f, 0.0f);
+        shader.setVec3("spotLight.specular", 0.0f, 0.0f, 0.0f);
+    }
+
+    shader.setFloat("spotLight.constant", 1.0f);
+    shader.setFloat("spotLight.linear", 0.09f);
+    shader.setFloat("spotLight.quadratic", 0.032f);
+    shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+    shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+}
+
 // process all input: query GLFW whether relevant keys are pressed/released this
 // frame and react accordingly
 void processInput(GLFWwindow *window)
@@ -819,21 +856,21 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         }
 
         if (key == GLFW_KEY_R && action == GLFW_PRESS) {
-                programState->pointLight.constant = 1.0f;
-                programState->pointLight.linear = 0.02f;
-                programState->pointLight.quadratic = 0.1f;
+                blinn= !blinn;
+                spotLightOn = !spotLightOn;
+                SCR_WIDTH = 800;
+                SCR_HEIGHT = 600;
         }
 
         if (key == GLFW_KEY_T && action == GLFW_PRESS) {
-                programState->pointLight.constant = 1.0f;
-                programState->pointLight.linear = 0.99f;
-                programState->pointLight.quadratic = 0.5f;
+                SCR_WIDTH=1000;
+                SCR_HEIGHT=720;
         }
 
+
         if (key == GLFW_KEY_E && action == GLFW_PRESS) {
-                programState->pointLight.constant = 1.0f;
-                programState->pointLight.linear = 0.03f;
-                programState->pointLight.quadratic = 0.03f;
+                SCR_WIDTH = 1366;
+                SCR_HEIGHT =  768;
         }
 }
 
