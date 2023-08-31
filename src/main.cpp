@@ -182,9 +182,6 @@ int main()
         Shader textureShader("resources/shaders/texture.vs",
                              "resources/shaders/texture.fs");
 
-        // sejder za plavu kocku
-        Shader blueShader("resources/shaders/blueLight.vs",
-                          "resources/shaders/blueLight.fs");
 
         // load models
         // -----------
@@ -384,7 +381,7 @@ int main()
                 myModel.Draw(ourShader);
                 // renderuj prvu belu radu
                 glm::mat4 model2 = glm::mat4(1.0f);
-                model2 = glm::translate(model2, glm::vec3(-13.0, 0.27f, -1.0f));
+                model2 = glm::translate(model2, glm::vec3(-9.0, 0.27f, -1.0f));
                 model2 = glm::rotate(model2, glm::radians(0.0f), glm::vec3(1, 0, 1));
                 model2 = glm::scale(model2, glm::vec3(0.20f));
                 ourShader.setMat4("model", model2);
@@ -392,7 +389,7 @@ int main()
 
                 // renderuj drugu belu radu
                 glm::mat4 model3 = glm::mat4(1.0f);
-                model3 = glm::translate(model3, glm::vec3(-13.2, 0.27f, -1.0f));
+                model3 = glm::translate(model3, glm::vec3(-9.2, 0.27f, -1.0f));
                 model3 = glm::rotate(model3, glm::radians(0.0f), glm::vec3(1, 0, 1));
                 model3 = glm::scale(model3, glm::vec3(0.20f));
                 ourShader.setMat4("model", model3);
@@ -416,7 +413,7 @@ int main()
                 glm::mat4 yellowModel = glm::mat4(1.0f);
                 yellowModel = glm::translate(
                     yellowModel,
-                    glm::vec3(-17.3f, 2.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
+                    glm::vec3(-6.9f, 3.7f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 yellowModel = glm::scale(yellowModel, glm::vec3(0.5, 0.5, 0.5));
                 yellowShader.setMat4("model", yellowModel);
 
@@ -424,12 +421,11 @@ int main()
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
+
                 glm::mat4 yellowModel1 = glm::mat4(1.0f);
                 yellowModel1 = glm::translate(
                     yellowModel1,
-                    glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -3.2f));
-                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
-                // -3.5f));
+                    glm::vec3(-7.2f, 3.7f + sin(glfwGetTime()) * 1 / 3, -3.2f));
                 yellowModel1 = glm::scale(yellowModel1, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel1);
 
@@ -437,12 +433,11 @@ int main()
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
+
                 glm::mat4 yellowModel2 = glm::mat4(1.0f);
                 yellowModel2 = glm::translate(
                     yellowModel2,
-                    glm::vec3(-17.3f, 3.0f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
-                // -3.5f));
+                    glm::vec3(-6.7f, 4.5f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 yellowModel2 = glm::scale(yellowModel2, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel2);
 
@@ -453,7 +448,7 @@ int main()
                 glm::mat4 yellowModel3 = glm::mat4(1.0f);
                 yellowModel3 = glm::translate(
                     yellowModel3,
-                    glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -5.8f));
+                    glm::vec3(-7.2f, 4.0f + sin(glfwGetTime()) * 1 / 3, -5.8f));
                 yellowModel3 = glm::scale(yellowModel3, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel3);
 
@@ -461,12 +456,11 @@ int main()
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
+
                 glm::mat4 yellowModel4 = glm::mat4(1.0f);
                 yellowModel4 = glm::translate(
                     yellowModel4,
-                    glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -2.2f));
-                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
-                // -3.5f));
+                    glm::vec3(-7.2f, 3.7f + sin(glfwGetTime()) * 1 / 3, -2.2f));
                 yellowModel4 = glm::scale(yellowModel4, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel4);
 
@@ -474,12 +468,11 @@ int main()
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // model matrica i render kocke
+
                 glm::mat4 yellowModel5 = glm::mat4(1.0f);
                 yellowModel5 = glm::translate(
                     yellowModel5,
-                    glm::vec3(-17.3f, 3.8f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
-                // -3.5f));
+                    glm::vec3(-6.7f, 5.3f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 yellowModel5 = glm::scale(yellowModel5, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel5);
 
@@ -490,7 +483,7 @@ int main()
                 glm::mat4 yellowModel6 = glm::mat4(1.0f);
                 yellowModel6 = glm::translate(
                     yellowModel6,
-                    glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -6.8f));
+                    glm::vec3(-7.2f, 4.0f + sin(glfwGetTime()) * 1 / 3, -6.8f));
                 yellowModel6 = glm::scale(yellowModel6, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel6);
 
@@ -501,9 +494,7 @@ int main()
                 glm::mat4 yellowModel8 = glm::mat4(1.0f);
                 yellowModel8 = glm::translate(
                     yellowModel8,
-                    glm::vec3(-17.3f, 4.6f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                // yellowModel1 = glm::translate(yellowModel1, glm::vec3(-17.8f, 2.2f,
-                // -3.5f));
+                    glm::vec3(-6.7f, 6.1f + sin(glfwGetTime()) * 1 / 3, -4.0f));
                 yellowModel8 = glm::scale(yellowModel8, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel8);
 
@@ -514,7 +505,7 @@ int main()
                 glm::mat4 yellowModel9 = glm::mat4(1.0f);
                 yellowModel9 = glm::translate(
                     yellowModel9,
-                    glm::vec3(-17.8f, 2.5f + sin(glfwGetTime()) * 1 / 3, -7.6f));
+                    glm::vec3(-7.2f, 4.0f + sin(glfwGetTime()) * 1 / 3, -7.6f));
                 yellowModel9 = glm::scale(yellowModel9, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel9);
 
@@ -525,7 +516,7 @@ int main()
                 glm::mat4 yellowModel10 = glm::mat4(1.0f);
                 yellowModel10 = glm::translate(
                     yellowModel10,
-                    glm::vec3(-17.8f, 2.2f + sin(glfwGetTime()) * 1 / 3, -1.4f));
+                    glm::vec3(-7.2f, 3.7f + sin(glfwGetTime()) * 1 / 3, -1.4f));
                 yellowModel10 = glm::scale(yellowModel10, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel10);
 
@@ -536,7 +527,7 @@ int main()
                 glm::mat4 yellowModel11 = glm::mat4(1.0f);
                 yellowModel11 = glm::translate(
                     yellowModel11,
-                    glm::vec3(-18.0f, 2.9f + sin(glfwGetTime()) * 1 / 3, -3.7f));
+                    glm::vec3(-7.4f, 4.4f + sin(glfwGetTime()) * 1 / 3, -3.7f));
                 yellowModel11 = glm::scale(yellowModel11, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel11);
 
@@ -547,7 +538,7 @@ int main()
                 glm::mat4 yellowModel12 = glm::mat4(1.0f);
                 yellowModel12 = glm::translate(
                     yellowModel12,
-                    glm::vec3(-18.5f, 3.5f + sin(glfwGetTime()) * 1 / 3, -3.2f));
+                    glm::vec3(-7.9f, 5.0f + sin(glfwGetTime()) * 1 / 3, -3.2f));
                 yellowModel12 = glm::scale(yellowModel12, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel12);
 
@@ -558,7 +549,7 @@ int main()
                 glm::mat4 yellowModel13 = glm::mat4(1.0f);
                 yellowModel13 = glm::translate(
                     yellowModel13,
-                    glm::vec3(-18.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -2.8f));
+                    glm::vec3(-8.3f, 5.4f + sin(glfwGetTime()) * 1 / 3, -2.8f));
                 yellowModel13 = glm::scale(yellowModel13, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel13);
 
@@ -569,7 +560,7 @@ int main()
                 glm::mat4 yellowModel14 = glm::mat4(1.0f);
                 yellowModel14 = glm::translate(
                     yellowModel14,
-                    glm::vec3(-16.6f, 2.9f + sin(glfwGetTime()) * 1 / 3, -4.3f));
+                    glm::vec3(-6.0f, 4.4f + sin(glfwGetTime()) * 1 / 3, -4.3f));
                 yellowModel14 = glm::scale(yellowModel14, glm::vec3(0.4, 0.4, 0.4));
                 yellowShader.setMat4("model", yellowModel14);
 
@@ -580,7 +571,7 @@ int main()
                 glm::mat4 yellowModel15 = glm::mat4(1.0f);
                 yellowModel15 = glm::translate(
                     yellowModel15,
-                    glm::vec3(-16.1f, 3.5f + sin(glfwGetTime()) * 1 / 3, -4.7f));
+                    glm::vec3(-5.5f, 5.0f + sin(glfwGetTime()) * 1 / 3, -4.7f));
                 yellowModel15 = glm::scale(yellowModel15, glm::vec3(0.3, 0.3, 0.3));
                 yellowShader.setMat4("model", yellowModel15);
 
@@ -591,27 +582,13 @@ int main()
                 glm::mat4 yellowModel16 = glm::mat4(1.0f);
                 yellowModel16 = glm::translate(
                     yellowModel16,
-                    glm::vec3(-15.9f, 3.9f + sin(glfwGetTime()) * 1 / 3, -5.1f));
+                    glm::vec3(-5.3f, 5.4f + sin(glfwGetTime()) * 1 / 3, -5.1f));
                 yellowModel16 = glm::scale(yellowModel16, glm::vec3(0.2, 0.2, 0.2));
                 yellowShader.setMat4("model", yellowModel16);
 
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
-                blueShader.use();
-                blueShader.setMat4("projection", projection);
-                blueShader.setMat4("view", view);
-
-                // model matrica i render kocke
-                glm::mat4 blueModel = glm::mat4(1.0f);
-                blueModel = glm::translate(
-                    blueModel,
-                    glm::vec3(-15.3f, 10.2f + sin(glfwGetTime()) * 1 / 3, -4.0f));
-                blueModel = glm::scale(blueModel, glm::vec3(0.5, 0.5, 0.5));
-                blueShader.setMat4("model", blueModel);
-
-                glBindVertexArray(VAO_cube);
-                glDrawArrays(GL_TRIANGLES, 0, 36);
 
                 // kocka sa teksturama
                 glActiveTexture(GL_TEXTURE0);
@@ -648,16 +625,12 @@ int main()
                 // model matrica i render kocke sa teksturom
                 glm::mat4 textureModel = glm::mat4(1.0f);
                 textureModel =
-                    glm::translate(textureModel, glm::vec3(1.0f, -0.5f, 1.0f));
-                textureModel = glm::scale(textureModel, glm::vec3(5.0, 5.0, 5.0));
+                    glm::translate(textureModel, glm::vec3(-4.5f, 1.0f, 1.0f));
+                textureModel = glm::scale(textureModel, glm::vec3(2.0, 2.0, 2.0));
                 textureModel = glm::rotate(textureModel, glm::radians(0.8f),
                                             glm::vec3(1.0f, 0.0f, 0.0f));
                 textureShader.setMat4("model", textureModel);
-                /*
-                    model3=glm::translate(model3, glm::vec3(-13.2, 0.27f,-1.0f));
-                    model3=glm::rotate(model3, glm::radians(0.0f), glm::vec3(1,0,1));
-                    model3=glm::scale(model3, glm::vec3(0.20f));
-                    */
+
 
                 glBindVertexArray(VAO_texture);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
