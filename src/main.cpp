@@ -30,13 +30,14 @@ unsigned int loadTexture(char const *path);
 
 void setOurLights(Shader shader);
 
+void renderQuad();
+
 // settings
  unsigned int SCR_WIDTH = 800;
  unsigned int SCR_HEIGHT = 600;
-float exposure = 0.5f;
+
 
 // camera
-
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -44,23 +45,15 @@ bool firstMouse = true;
 // postavljenje naseg osvetljenja na scenu
 bool spotLightOn = false;
 bool blinn = true;
+bool hdr=true;
+bool bloom=true;
+float exposure = 1.0f;
+
 glm::vec3 lightPosition(-5.0f, 4.3f, 2.6f);
 
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-//! Svetlo i njegove komponente predstavljamo kao strukturu.
-struct PointLight {
-        glm::vec3 position;
-        glm::vec3 ambient;
-        glm::vec3 diffuse;
-        glm::vec3 specular;
-
-        float constant;
-        float linear;
-        float quadratic;
-};
 
 //! Stanje programa pamtimo kao strukturu
 struct ProgramState {
@@ -71,6 +64,8 @@ struct ProgramState {
         glm::vec3 skullPosition = glm::vec3(1.0f);
         float skullScale = 0.1f;
         PointLight pointLight;
+        DirLight dirLight;
+        SpotLight spotLight;
         ProgramState() : camera(glm::vec3(0.0f, 0.0f, 3.0f)) {}
 
         void saveToFile(std::string filename);
@@ -189,8 +184,12 @@ int main()
         Shader skyboxShader("resources/shaders/skybox.vs", "resources/shaders/skybox.fs");
         Shader textureShader("resources/shaders/texture.vs",
                              "resources/shaders/texture.fs");
-
+        // dodajemo shader za duhove
         Shader ghostShader("resources/shaders/ghost.vs", "resources/shaders/ghost.fs");
+        // dodajemo shader za hdr i bloom
+        Shader hdrShader("resources/shaders/hdr.vs", "resources/shaders/hdr.fs");
+        Shader bloomShader("resources/shaders/bloom.vs", "resources/shaders/bloom.fs");
+
 
         // load models
         // -----------
@@ -357,8 +356,6 @@ int main()
             };
         unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost5.jpeg").c_str());
         stbi_set_flip_vertically_on_load(true);
-        ghostShader.use();
-        ghostShader.setInt("texture1", 0);
 
         // ucitavanje skybox modela
 
@@ -378,6 +375,69 @@ int main()
         // draw in wireframe
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+        ghostShader.use();
+        ghostShader.setInt("texture1", 0);
+
+        bloomShader.use();
+        bloomShader.setInt("image", 0);
+
+        hdrShader.use();
+        hdrShader.setInt("hdrBuffer", 0);
+        hdrShader.setInt("bloomBlur", 1);
+
+        //  hdr
+        unsigned int hdrFBO;
+        glGenFramebuffers(1, &hdrFBO);
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
+
+        unsigned int colorBuffers[2];
+        glGenTextures(2, colorBuffers);
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            // zakaci teksturu za frame buffer
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0);
+        }
+
+        // pravljenje i dodavanja bafera za dubinu
+        unsigned int rboDepth;
+        glGenRenderbuffers(1, &rboDepth);
+        glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+        // dodajemo boje
+        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers(2, attachments);
+        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            std::cout << "Framebuffer not complete!" << std::endl;
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+        // pingpong frejmbafer za blur
+        unsigned int pingpongFBO[2];
+        unsigned int pingpongColorbuffers[2];
+        glGenFramebuffers(2, pingpongFBO);
+        glGenTextures(2, pingpongColorbuffers);
+        for (unsigned int i = 0; i < 2; i++)
+        {
+            glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+            glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+                std::cout << "Framebuffer not complete!" << std::endl;
+        }
+
         // render loop
         // -----------
         while (!glfwWindowShouldClose(window)) {
@@ -395,6 +455,10 @@ int main()
                 // ------
                 glClearColor(programState->clearColor.r, programState->clearColor.g,
                              programState->clearColor.b, 1.0f);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+                // dodajemo hdr frejmbafer
+                glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
                 glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
                 // don't forget to enable shader before setting uniforms
@@ -715,6 +779,37 @@ int main()
                 glBindVertexArray(0);
                 glDepthMask(GL_LESS > 0 ? GL_TRUE : GL_FALSE);
 
+                // ucitavanje pingpong bafera
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                bool horizontal = true, first_iteration = true;
+                unsigned int amount = 10;
+                bloomShader.use();
+                for (unsigned int i = 0; i < amount; i++)
+                {
+                    glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+                    bloomShader.setInt("horizontal", horizontal);
+                    glBindTexture(GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal]);
+
+                    renderQuad();
+
+                    horizontal = !horizontal;
+                    if (first_iteration)
+                        first_iteration = false;
+                }
+
+                // ucitaj hdr i bloom
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+                hdrShader.use();
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, colorBuffers[0]);
+                glActiveTexture(GL_TEXTURE1);
+                glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
+                hdrShader.setBool("hdr", hdr);
+                hdrShader.setBool("bloom",bloom);
+                hdrShader.setFloat("exposure", exposure);
+                renderQuad();
+
                 if (programState->ImGuiEnabled)
                         drawImGui(programState);
                 // glfw: swap buffers and poll IO events (keys pressed/released, mouse
@@ -742,43 +837,73 @@ int main()
         return 0;
 }
 
-void setOurLights(Shader shader){
-    shader.setVec3("light.position", lightPosition);
-    shader.setVec3("viewPos", programState->camera.Position);
-
-    // direkciono svetlo
-    shader.setVec3("dirLight.direction", 0.0f, -1.0, 0.0f);
-    shader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-    shader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
-    shader.setVec3("dirLight.specular", 0.4f, 0.4f, 0.4f);
-
-    // osobine pointlight svetla
-    shader.setVec3("pointLights[0].position", lightPosition);
-    shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-    shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-    shader.setVec3("pointLights[0].specular", 0.4f, 0.4f, 0.4f);
-    shader.setFloat("pointLights[0].constant", 1.0f);
-    shader.setFloat("pointLights[0].linear", 0.09f);
-    shader.setFloat("pointLights[0].quadratic", 0.032f);
-
-    // spotLight
-    shader.setVec3("spotLight.position", programState->camera.Position);
-    shader.setVec3("spotLight.direction", programState->camera.Front);
-    shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-
-    if(spotLightOn){
-        shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-        shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-    }else{
-        shader.setVec3("spotLight.diffuse", 0.0f, 0.0f, 0.0f);
-        shader.setVec3("spotLight.specular", 0.0f, 0.0f, 0.0f);
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad()
+{
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+                // positions        // koordinate teksture
+                -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+                -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+                1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+                1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // pravimo VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     }
 
-    shader.setFloat("spotLight.constant", 1.0f);
-    shader.setFloat("spotLight.linear", 0.09f);
-    shader.setFloat("spotLight.quadratic", 0.032f);
-    shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
-    shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
+}
+
+void setOurLights(Shader shader){
+        shader.setVec3("light.position", lightPosition);
+        shader.setVec3("viewPos", programState->camera.Position);
+
+        // direkciono svetlo
+        shader.setVec3("dirLight.direction", 0.0f, -1.0, 0.0f);
+        shader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+        shader.setVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+        shader.setVec3("dirLight.specular", 0.4f, 0.4f, 0.4f);
+
+        // osobine pointlight svetla
+        shader.setVec3("pointLights[0].position", lightPosition);
+        shader.setVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+        shader.setVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+        shader.setVec3("pointLights[0].specular", 0.4f, 0.4f, 0.4f);
+        shader.setFloat("pointLights[0].constant", 1.0f);
+        shader.setFloat("pointLights[0].linear", 0.09f);
+        shader.setFloat("pointLights[0].quadratic", 0.032f);
+
+        // spotLight
+        shader.setVec3("spotLight.position", programState->camera.Position);
+        shader.setVec3("spotLight.direction", programState->camera.Front);
+        shader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+
+        if(spotLightOn){
+            shader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+            shader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+        }else{
+            shader.setVec3("spotLight.diffuse", 0.0f, 0.0f, 0.0f);
+            shader.setVec3("spotLight.specular", 0.0f, 0.0f, 0.0f);
+        }
+
+        shader.setFloat("spotLight.constant", 1.0f);
+        shader.setFloat("spotLight.linear", 0.09f);
+        shader.setFloat("spotLight.quadratic", 0.032f);
+        shader.setFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+        shader.setFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this
@@ -850,9 +975,9 @@ void drawImGui(ProgramState *programState)
                 ImGui::Text("Hello text");
                 ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
                 ImGui::ColorEdit3("Background color", (float *)&programState->clearColor);
-                ImGui::DragFloat3("Backpack position",
+                ImGui::DragFloat3("Skull position",
                                   (float *)&programState->skullPosition);
-                ImGui::DragFloat("Backpack scale", &programState->skullScale, 0.05, 0.1,
+                ImGui::DragFloat("Skull scale", &programState->skullScale, 0.05, 0.1,
                                  4.0);
 
                 ImGui::DragFloat("pointLight.constant",
@@ -909,6 +1034,14 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         if (key == GLFW_KEY_E && action == GLFW_PRESS) {
                 SCR_WIDTH = 1366;
                 SCR_HEIGHT =  768;
+        }
+
+        if (key ==  GLFW_KEY_H && action == GLFW_PRESS){
+            bloom= !bloom;
+        }
+
+        if (key == GLFW_KEY_H && action == GLFW_PRESS){
+            hdr= !hdr;
         }
 }
 
