@@ -170,6 +170,14 @@ int main()
         // -----------------------------
         glEnable(GL_DEPTH_TEST);
 
+        // Face culling
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+
+        // Blending
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
         // build and compile shaders
         // -------------------------
         Shader ourShader("resources/shaders/modelLighting.vs",
@@ -182,6 +190,7 @@ int main()
         Shader textureShader("resources/shaders/texture.vs",
                              "resources/shaders/texture.fs");
 
+        Shader ghostShader("resources/shaders/ghost.vs", "resources/shaders/ghost.fs");
 
         // load models
         // -----------
@@ -312,12 +321,47 @@ int main()
                               (void *)(5 * sizeof(float)));
         glEnableVertexAttribArray(2);
 
+        stbi_set_flip_vertically_on_load(true);
         unsigned int texture =
             loadTexture(FileSystem::getPath("resources/textures/ophelia.jpg").c_str());
-
+        stbi_set_flip_vertically_on_load(false);
         textureShader.use();
         textureShader.setInt("texture_diffuse1", 0);
+         float transparentVertices[] = {
+            // positions         // koordiante tekstura
+            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+            0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+            0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+            1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+            1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+        };
+
+        //transparent VAO
+        unsigned int transparentVAO, transparentVBO;
+        glGenVertexArrays(1, &transparentVAO);
+        glGenBuffers(1, &transparentVBO);
+        glBindVertexArray(transparentVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, transparentVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(transparentVertices), transparentVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+        glBindVertexArray(0);
+        vector<glm::vec3> ghosts
+            {
+                    glm::vec3(-15.3f, -50.5f, -44.45f),
+                    glm::vec3( -24.2f, -53.9f, -23.43f),
+                    glm::vec3( -53.5f, -49.87f, -20.7f)
+            };
+        unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost5.jpeg").c_str());
+        stbi_set_flip_vertically_on_load(true);
+        ghostShader.use();
+        ghostShader.setInt("texture1", 0);
+
         // ucitavanje skybox modela
+
         stbi_set_flip_vertically_on_load(false);
         vector<std::string> faces{FileSystem::getPath("resources/textures/right.jpg"),
                                   FileSystem::getPath("resources/textures/left.jpg"),
@@ -403,6 +447,24 @@ int main()
                 ourShader.setMat4("model", model4);
                 myModel3.Draw(ourShader);
 
+                glDisable(GL_CULL_FACE);
+
+                //ghosts (blending)
+                ghostShader.use();
+                ghostShader.setMat4("projection",projection);
+                ghostShader.setMat4("view",view);
+                glBindVertexArray(transparentVAO);
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, transparentTexture);
+                for (const glm::vec3& g : ghosts)
+                {
+                    model = glm::mat4(1.0f);
+                    model = glm::translate(model, g);
+                    model = glm::scale(model,glm::vec3(10.0f));
+                    ghostShader.setMat4("model", model);
+                    glDrawArrays(GL_TRIANGLES, 0, 6);
+                }
+                glEnable(GL_CULL_FACE);
                 yellowShader.use();
 
                 // matrice transformacija: view, projection
@@ -595,7 +657,8 @@ int main()
                 glBindTexture(GL_TEXTURE_2D, texture);
 
                 textureShader.use();
-
+                setOurLights(textureShader);
+                /*
                 // directional light
                 textureShader.setVec3("dirLight.direction", 0.0f, -5.0f, -15.0f);
                 textureShader.setVec3("dirLight.ambient", 0.6, 0.4f, 0.1f);
@@ -617,7 +680,7 @@ int main()
                 textureShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(10.0f)));
                 textureShader.setFloat("spotLight.outerCutOff",
                                        glm::cos(glm::radians(15.0f)));
-
+                */
                 // matrice transformacija: view, projection
                 textureShader.setMat4("projection", projection);
                 textureShader.setMat4("view", view);
@@ -627,8 +690,8 @@ int main()
                 textureModel =
                     glm::translate(textureModel, glm::vec3(-4.5f, 1.0f, 1.0f));
                 textureModel = glm::scale(textureModel, glm::vec3(2.0, 2.0, 2.0));
-                textureModel = glm::rotate(textureModel, glm::radians(0.8f),
-                                            glm::vec3(1.0f, 0.0f, 0.0f));
+                //textureModel = glm::rotate(textureModel, (float)glfwGetTime(),
+                                            //glm::vec3(0.0f, 1.0f, 0.0f));
                 textureShader.setMat4("model", textureModel);
 
 
@@ -670,7 +733,9 @@ int main()
         // ------------------------------------------------------------------
         glDeleteVertexArrays(1, &skyboxVAO);
         glDeleteVertexArrays(1, &VAO_texture);
+        glDeleteVertexArrays(1, &transparentVAO);
 
+        glDeleteBuffers(1, &transparentVBO);
         glDeleteBuffers(1, &VBO_texture);
         glDeleteBuffers(1, &skyboxVBO);
         glfwTerminate();
