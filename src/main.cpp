@@ -342,9 +342,11 @@ int main()
             {
                     glm::vec3(-15.3f, -50.5f, -44.45f),
                     glm::vec3( -24.2f, -53.9f, -23.43f),
-                    glm::vec3( -53.5f, -49.87f, -20.7f)
+                    glm::vec3( -53.5f, -49.87f, -20.7f),
+                    glm::vec3(-68.58f, -35.65f, -14.57f),
+                    glm::vec3(-85.34f, -24.86f, -25.67f)
             };
-        unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost5.jpeg").c_str());
+        unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost.png").c_str());
         stbi_set_flip_vertically_on_load(true);
         ghostShader.use();
         ghostShader.setInt("texture1", 0);
