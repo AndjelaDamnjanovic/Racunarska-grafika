@@ -45,11 +45,11 @@ bool firstMouse = true;
 // postavljenje naseg osvetljenja na scenu
 bool spotLightOn = false;
 bool blinn = true;
-bool hdr=true;
-bool bloom=true;
-float exposure = 1.0f;
+bool hdr= false;
+bool bloom= false;
+float exposure = 2.0f;
 
-glm::vec3 lightPosition(-5.0f, 4.3f, 2.6f);
+glm::vec3 lightPosition(-15.0f, 4.3f, 2.6f);
 
 // timing
 float deltaTime = 0.0f;
@@ -122,7 +122,7 @@ int main()
         // glfw window creation
         // --------------------
         GLFWwindow *window =
-            glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", nullptr, nullptr);
+            glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Hamlet iz Mrduse Donje", nullptr, nullptr);
         if (window == nullptr) {
                 std::cout << "Failed to create GLFW window" << std::endl;
                 glfwTerminate();
@@ -200,16 +200,6 @@ int main()
         myModel.SetShaderTextureNamePrefix("material.");
         myModel2.SetShaderTextureNamePrefix("material.");
         myModel3.SetShaderTextureNamePrefix("material.");
-
-        PointLight &pointLight = programState->pointLight;
-        pointLight.position = glm::vec3(4.0f, 4.0, 0.0);
-        pointLight.ambient = glm::vec3(0.1, 0.1, 0.1);
-        pointLight.diffuse = glm::vec3(0.6, 0.6, 0.6);
-        pointLight.specular = glm::vec3(1.0, 1.0, 1.0);
-
-        pointLight.constant = 1.0f;
-        pointLight.linear = 0.09f;
-        pointLight.quadratic = 0.032f;
 
         // skybox temena
         float skyboxVertices[] = {
@@ -356,6 +346,8 @@ int main()
             };
         unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost5.jpeg").c_str());
         stbi_set_flip_vertically_on_load(true);
+        ghostShader.use();
+        ghostShader.setInt("texture1", 0);
 
         // ucitavanje skybox modela
 
@@ -374,9 +366,6 @@ int main()
 
         // draw in wireframe
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-        ghostShader.use();
-        ghostShader.setInt("texture1", 0);
 
         bloomShader.use();
         bloomShader.setInt("image", 0);
@@ -528,7 +517,6 @@ int main()
                     ghostShader.setMat4("model", model);
                     glDrawArrays(GL_TRIANGLES, 0, 6);
                 }
-                glEnable(GL_CULL_FACE);
                 yellowShader.use();
 
                 // matrice transformacija: view, projection
@@ -715,36 +703,14 @@ int main()
                 glBindVertexArray(VAO_cube);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
 
-
+                glEnable(GL_CULL_FACE);
                 // kocka sa teksturama
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, texture);
 
                 textureShader.use();
                 setOurLights(textureShader);
-                /*
-                // directional light
-                textureShader.setVec3("dirLight.direction", 0.0f, -5.0f, -15.0f);
-                textureShader.setVec3("dirLight.ambient", 0.6, 0.4f, 0.1f);
-                textureShader.setVec3("dirLight.diffuse", 0.7f, 0.7f, 0.7f);
-                textureShader.setVec3("dirLight.specular", 1.0f, 1.0f, 1.0f);
-                textureShader.setVec3("viewPosition", programState->camera.Position);
-                textureShader.setFloat("material.shininess", 126.0f);
 
-                // spotlight
-                textureShader.setVec3("spotLight.position",
-                                      programState->camera.Position);
-                textureShader.setVec3("spotLight.direction", programState->camera.Front);
-                textureShader.setVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
-                textureShader.setVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
-                textureShader.setVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
-                textureShader.setFloat("spotLight.constant", 1.0f);
-                textureShader.setFloat("spotLight.linear", 0.022);
-                textureShader.setFloat("spotLight.quadratic", 0.0019);
-                textureShader.setFloat("spotLight.cutOff", glm::cos(glm::radians(10.0f)));
-                textureShader.setFloat("spotLight.outerCutOff",
-                                       glm::cos(glm::radians(15.0f)));
-                */
                 // matrice transformacija: view, projection
                 textureShader.setMat4("projection", projection);
                 textureShader.setMat4("view", view);
@@ -754,8 +720,6 @@ int main()
                 textureModel =
                     glm::translate(textureModel, glm::vec3(-4.5f, 1.0f, 1.0f));
                 textureModel = glm::scale(textureModel, glm::vec3(2.0, 2.0, 2.0));
-                //textureModel = glm::rotate(textureModel, (float)glfwGetTime(),
-                                            //glm::vec3(0.0f, 1.0f, 0.0f));
                 textureShader.setMat4("model", textureModel);
 
 
@@ -782,7 +746,7 @@ int main()
                 // ucitavanje pingpong bafera
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
                 bool horizontal = true, first_iteration = true;
-                unsigned int amount = 10;
+                unsigned int amount = 3;
                 bloomShader.use();
                 for (unsigned int i = 0; i < amount; i++)
                 {
@@ -971,8 +935,8 @@ void drawImGui(ProgramState *programState)
 
         {
                 static float f = 0.0f;
-                ImGui::Begin("Hello window");
-                ImGui::Text("Hello text");
+                ImGui::Begin("Hamlet iz Mrduse Donje");
+                ImGui::Text("Projekat iz Racunarske grafike");
                 ImGui::SliderFloat("Float slider", &f, 0.0, 1.0);
                 ImGui::ColorEdit3("Background color", (float *)&programState->clearColor);
                 ImGui::DragFloat3("Skull position",
@@ -1026,18 +990,22 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         }
 
         if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+                blinn= !blinn;
+                spotLightOn = !spotLightOn;
                 SCR_WIDTH=1000;
                 SCR_HEIGHT=720;
         }
 
 
         if (key == GLFW_KEY_E && action == GLFW_PRESS) {
+                blinn= !blinn;
+                spotLightOn = !spotLightOn;
                 SCR_WIDTH = 1366;
                 SCR_HEIGHT =  768;
         }
 
-        if (key ==  GLFW_KEY_H && action == GLFW_PRESS){
-            bloom= !bloom;
+        if (key ==  GLFW_KEY_B && action == GLFW_PRESS){
+            bloom!=bloom;
         }
 
         if (key == GLFW_KEY_H && action == GLFW_PRESS){
