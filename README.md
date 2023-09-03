@@ -24,8 +24,8 @@
 # Hamlet iz Mrduse Donje
 Tragedija ispunjena dramom i ludilom, septembarski ispitni rok inspirisan Hamletom.
 
-"Znamo sta smo, ali ne i sta mozemo biti" - Sekspir
-"Biti ili ne biti pitanje je sad" - Sekspir
+1. "Znamo sta smo, ali ne i sta mozemo biti" - Sekspir
+2. "Biti ili ne biti pitanje je sad" - Sekspir
 
 # Autor
 Andjela Damnjanovic, 59/2019
