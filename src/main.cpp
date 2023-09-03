@@ -26,7 +26,7 @@ void processInput(GLFWwindow *window);
 
 void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
 
-unsigned int loadTexture(char const *path);
+unsigned int loadTexture(char const *path, bool gammaCorrection);
 
 void setOurLights(Shader shader);
 
@@ -312,7 +312,7 @@ int main()
 
         stbi_set_flip_vertically_on_load(true);
         unsigned int texture =
-            loadTexture(FileSystem::getPath("resources/textures/ophelia.jpg").c_str());
+            loadTexture(FileSystem::getPath("resources/textures/ophelia.jpg").c_str(), true);
         stbi_set_flip_vertically_on_load(false);
         textureShader.use();
         textureShader.setInt("texture_diffuse1", 0);
@@ -346,7 +346,7 @@ int main()
                     glm::vec3(-68.58f, -35.65f, -14.57f),
                     glm::vec3(-85.34f, -24.86f, -25.67f)
             };
-        unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost.png").c_str());
+        unsigned int transparentTexture = loadTexture(FileSystem::getPath("resources/textures/ghost.png").c_str(), true);
         stbi_set_flip_vertically_on_load(true);
         ghostShader.use();
         ghostShader.setInt("texture1", 0);
@@ -1055,7 +1055,7 @@ unsigned int loadCubemap(vector<std::string> faces)
 }
 
 // ucitavanje tekstura za kocku
-unsigned int loadTexture(char const *path)
+unsigned int loadTexture(char const *path, bool gammaCorrection)
 {
         unsigned int textureID;
         glGenTextures(1, &textureID);
@@ -1069,9 +1069,9 @@ unsigned int loadTexture(char const *path)
                         format = GL_RED;
                 else if (nrComponents == 3) {
                         format = GL_RGB;
-                        iternal = GL_SRGB;
+                        iternal = gammaCorrection ? GL_SRGB : GL_RGB;
                 } else if (nrComponents == 4) {
-                        iternal = GL_SRGB_ALPHA;
+                        iternal = gammaCorrection ? GL_SRGB_ALPHA : GL_RGBA;
                         format = GL_RGBA;
                 }
 
