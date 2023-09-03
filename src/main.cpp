@@ -1013,6 +1013,14 @@ void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods
         if (key == GLFW_KEY_H && action == GLFW_PRESS){
             hdr= !hdr;
         }
+
+        if (key == GLFW_KEY_P && action == GLFW_PRESS){
+            exposure+=0.2f;
+        }
+
+        if (key == GLFW_KEY_M && action == GLFW_PRESS){
+            exposure-=0.2f;
+        }
 }
 
 //! Funkcija za ucitavanje tekstura iz skyboxa
